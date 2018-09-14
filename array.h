@@ -102,7 +102,7 @@ T & Array<T>::operator [](int pos){return p[pos];}
 
 
 template <class T>
-T const & operator[](int pos) const{return p[pos];}
+T const & Array<T>::operator[](int pos) const{return p[pos];}
 
 
 template <typename T> 
