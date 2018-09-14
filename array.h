@@ -28,8 +28,8 @@ public:
 	size_t 		GetTotalLen() const;
 	size_t 		GetUsedLen() const; 
 	Array<T> & 	operator=( const Array<T> & ); 
-	T & 		operator[](int);
-	T const &	operator[](int) const;
+	T & 		operator[](size_t);
+	T const &	operator[](size_t) const;
 	void 		push_back(const T &);
 	void 		clear();
 	template <typename TT>
@@ -98,11 +98,11 @@ size_t Array<T>::GetTotalLen() const { return total_len; }
 
 
 template <class T>
-T & Array<T>::operator [](int pos){return p[pos];}
+T & Array<T>::operator [](size_t pos){return p[pos];}
 
 
 template <class T>
-T const & Array<T>::operator[](int pos) const{return p[pos];}
+T const & Array<T>::operator[](size_t pos) const{return p[pos];}
 
 
 template <typename T> 
