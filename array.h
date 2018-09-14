@@ -21,18 +21,19 @@ class Array
 
 public:
 
-	Array();
-	Array(size_t);
-	Array(const Array<T> &); 
-	~Array();
-	size_t GetTotalLen() const;
-	size_t GetUsedLen() const; 
-	Array<T>&operator=( const Array<T> & ); 
-	T &operator[](int);
-	void print();
-	void push_back(const T &);
-	void clear();
-
+			Array();
+			Array(size_t);
+			Array(const Array<T> &); 
+			~Array();
+	size_t 		GetTotalLen() const;
+	size_t 		GetUsedLen() const; 
+	Array<T> & 	operator=( const Array<T> & ); 
+	T & 		operator[](int);
+	T const &	operator[](int) const;
+	void 		push_back(const T &);
+	void 		clear();
+	template <typename TT>
+	friend std::ostream& operator<<(std::ostream&,const Array<TT>&);
 	template <typename TT>
 	friend std::istream & operator>> (std::istream&,Array<TT>&);
 };
@@ -97,16 +98,31 @@ size_t Array<T>::GetTotalLen() const { return total_len; }
 
 
 template <class T>
-T & Array<T>::operator [](int pos){
+T & Array<T>::operator [](int pos){return p[pos];}
 
-	return p[pos];
-}
 
 template <class T>
-void Array<T>::print(){
-	for(int i=0;i<3;i++){
-		cout << p[i] << endl;
+T const & operator[](int pos) const{return p[pos];}
+
+
+template <typename T> 
+std::ostream & operator<< (std::ostream& os,const Array<T> & arr)
+{
+	// Escribe el arreglo en el formato (T1,T2,T3 ... Tn)
+	// Se asume que existe el operador << para la clase T
+	
+	if( arr.size() == 0 ){
+		os << "()";
+		return os;
 	}
+	os << "(";
+
+	for(size_t i=0; i<arr.size()-1; ++i){
+		os << arr[i] << ",";
+	}
+	os << arr[arr.size()-1];
+	os << ")";
+	return os;
 }
 
 /***************************** FUNCIONES HECHAS EN CLASE ***************************************/
