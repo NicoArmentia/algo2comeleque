@@ -42,7 +42,7 @@ public:
 
 template <class T>
 Array<T>::Array(){
-
+	cout<<"Array()\n";
 	used_len = 0;
 	total_len = DEFAULT_LEN;
 	p = new T[total_len];
@@ -52,55 +52,47 @@ Array<T>::Array(){
 
 template <class T>
 Array<T>::Array(size_t t){
-
-	if(!t)
-	{
+	cout<<"Array(size_t="<<t<<")\n";
+	if(!t){
 		total_len=0;
 		used_len=0;
-		p = new T*;
 		p = NULL;
 	}
-
 	else{
-
-	total_len = t;
-	used_len = 0;
-	p = new T[total_len];
-
+		total_len = t;
+		used_len = 0;
+		p = new T[total_len];
 	}
-
 }
 
 template <class T>
 Array<T>::Array(const Array<T> & a_init){
-
 	size_t i;
 	
+	cout<<"Array(Array<T> &)\n";
 	total_len = a_init.GetTotalLen();
 	used_len = a_init.GetUsedLen();
-	
 	p = new T[total_len];
-
 	for(i=0;i<used_len;i++)
 		p[i]=(a_init.p)[i];
-
 }
 
 template <class T>
 Array<T>::~Array(){
-
+	cout<<"~Array()\n";
 	delete []p;
 }
 
 template <class T>
-size_t Array<T>::GetUsedLen() const { return used_len; }
+size_t Array<T>::GetUsedLen() const {	cout<<"GetLen="<<used_len<<"\n"; return used_len; }
 
 template <class T>
-size_t Array<T>::GetTotalLen() const { return total_len; }
+size_t Array<T>::GetTotalLen() const {	cout<<"GetTot="<<total_len<<"\n"; return total_len; }
 
 template <typename T> 
 Array<T> & Array<T>::operator=(const Array<T> & rhs){
 	T * aux;
+	cout<<"Copiador = \n";
 	if (&rhs == this) {
 		return *this;
 	}
@@ -117,8 +109,7 @@ Array<T> & Array<T>::operator=(const Array<T> & rhs){
 	return *this;
 }
 template <typename T> 
-bool Array<T>::operator==(const Array<T> & rhs) const
-{
+bool Array<T>::operator==(const Array<T> & rhs) const{
 	if (used_len != rhs.used_len)
 		return false; 
 	else{
@@ -131,8 +122,7 @@ bool Array<T>::operator==(const Array<T> & rhs) const
 }
 
 template <typename T> 
-bool Array<T>::operator!=(const Array<T> & rhs) const
-{
+bool Array<T>::operator!=(const Array<T> & rhs) const{
 	if (rhs == *this)
 		return false;
 	else
@@ -140,37 +130,31 @@ bool Array<T>::operator!=(const Array<T> & rhs) const
 }
 
 template <class T>
-T & Array<T>::operator [](const size_t & pos){return p[pos];}
-
+T & Array<T>::operator [](const size_t & pos){cout<<"[]noconst\n";return p[pos];}
 
 template <class T>
-T const & Array<T>::operator[](const size_t & pos) const{return p[pos];}
-
+T const & Array<T>::operator[](const size_t & pos) const{cout<<"[]siconst\n";return p[pos];}
 
 template <typename T> 
-std::ostream & operator<< (std::ostream& os,const Array<T> & arr)
-{
+std::ostream & operator<< (std::ostream& os,const Array<T> & arr){
 	// Escribe el arreglo en el formato (T1,T2,T3 ... Tn)
-	// Se asume que existe el operador << para la clase T
-	
-	if( arr.size() == 0 ){
+	// Se asume que existe el operador << para la clase T	
+	if( arr.GetUsedLen() == 0 ){
 		os << "()";
 		return os;
 	}
 	os << "(";
-
-	for(size_t i=0; i<arr.size()-1; ++i){
+	for(size_t i=0; i<arr.GetUsedLen()-1; ++i){
 		os << arr[i] << ",";
 	}
-	os << arr[arr.size()-1];
+	os << arr[arr.GetUsedLen()-1];
 	os << ")";
 	return os;
 }
 
 /***************************** FUNCIONES HECHAS EN CLASE ***************************************/
 template <typename T> 
-void Array<T>::clear()
-{
+void Array<T>::clear(){
 	delete[] p;
 	total_len = DEFAULT_LEN;
 	used_len = 0;
@@ -179,13 +163,13 @@ void Array<T>::clear()
 
 
 template <typename T> 
-void Array<T>::resize(size_t new_size)
-{
+void Array<T>::resize(size_t new_size){
 	// Redimensiono el arreglo, y copio todo hasta donde puedo.
 	// Desde afuera no se ve el redimensionamiento
-
 	T *aux;
-
+	
+	cout<<"resize"<<new_size<<"\n";
+	
 	aux = new T[new_size];
 	if( new_size < used_len ){
 		used_len = new_size;
@@ -199,14 +183,13 @@ void Array<T>::resize(size_t new_size)
 }
 
 template <typename T> 
-void Array<T>::push_back(const T &new_thing)
-{
+void Array<T>::push_back(const T & new_thing){
+	cout<<"pushback"<<new_thing<<"\n";
 	// Si es necesario agrandar el arreglo ya que no queda más espacio, lo
 	// agrando por 2.
 	// La decisión de cuando agrandar puede variar, ya que puede ser cuando 
 	// el tamaño es la mitad del reservado, por ejemplo.
 	// Al agrandar, copio todos los elementos del arreglo
-
 	if(total_len == used_len){
 		this->resize(total_len*ARRAY_GROWTH_RATE);
 	}	
@@ -216,15 +199,13 @@ void Array<T>::push_back(const T &new_thing)
 
 
 template <typename T>
-std::istream & operator>> (std::istream& is,Array<T>& arr)
-{
+std::istream & operator>> (std::istream& is,Array<T>& arr){
 	// Limpio el arreglo y leo en formato (T1,T2,...,Tn) de is. Si no se hace conforme a lo
 	// esperado, limpio el arreglo (devuelvo uno sin elementos)
 	// Si llega a EOF, marcará en el istream
-
 	T aux = 0;
 	char ch = 0;
-
+	
 	arr.clear();
 	if( (is >> ch) && (ch == '(') && (is >> aux) ){
 		arr.push_back(aux);
@@ -235,7 +216,6 @@ std::istream & operator>> (std::istream& is,Array<T>& arr)
 	if ( ch != ')' ){
 		arr.clear();
 	}
-
 	return is;
 }
 
