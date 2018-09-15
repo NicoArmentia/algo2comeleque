@@ -27,9 +27,11 @@ public:
 			~Array();
 	size_t 		GetTotalLen() const;
 	size_t 		GetUsedLen() const; 
-	Array<T> & 	operator=( const Array<T> & ); 
-	T & 		operator[](size_t);
-	T const &	operator[](size_t) const;
+	Array<T> & 	operator=(const Array<T> &);
+	bool 		operator==(const Array<T> &) const; 
+	bool 		operator!=(const Array<T> &) const;
+	T & 		operator[](const size_t &);
+	T const &	operator[](const size_t &) const;
 	void 		push_back(const T &);
 	void 		clear();
 	template <typename TT>
@@ -96,13 +98,53 @@ size_t Array<T>::GetUsedLen() const { return used_len; }
 template <class T>
 size_t Array<T>::GetTotalLen() const { return total_len; }
 
+template <typename T> 
+Array<T> & Array<T>::operator=(const Array<T> & rhs){
+	T * aux;
+	if (&rhs == this) {
+		return *this;
+	}
+	if (total_len != rhs.total_len){
+		aux = new T[rhs.total_len]; 
+		delete [] p; 
+		p = aux;
+		total_len = rhs.total_len; 
+		used_len = rhs.used_len;
+	}
+	used_len = rhs.used_len;
+	for (size_t i = 0;i < used_len;i++)
+		p[i] = rhs.p[i]; 
+	return *this;
+}
+template <typename T> 
+bool Array<T>::operator==(const Array<T> & rhs) const
+{
+	if (used_len != rhs.used_len)
+		return false; 
+	else{
+		for(size_t i = 0;i < used_len;i++){
+			if (p[i] != rhs.p[i])
+       				return false; 
+		}
+	}
+       	return true; 
+}
+
+template <typename T> 
+bool Array<T>::operator!=(const Array<T> & rhs) const
+{
+	if (rhs == *this)
+		return false;
+	else
+		return true;
+}
 
 template <class T>
-T & Array<T>::operator [](size_t pos){return p[pos];}
+T & Array<T>::operator [](const size_t & pos){return p[pos];}
 
 
 template <class T>
-T const & Array<T>::operator[](size_t pos) const{return p[pos];}
+T const & Array<T>::operator[](const size_t & pos) const{return p[pos];}
 
 
 template <typename T> 
