@@ -9,7 +9,7 @@ using namespace std;
 #define _ARRAY_H_INCLUDED_
 
 #define DEFAULT_LEN 10
-#define ARRAY_GROWTH_RATE 5
+#define ARRAY_GROWTH_RATE 2
 
 template <class T>
 class Array
@@ -42,7 +42,6 @@ public:
 
 template <class T>
 Array<T>::Array(){
-	cout<<"Array()\n";
 	used_len = 0;
 	total_len = DEFAULT_LEN;
 	p = new T[total_len];
@@ -52,7 +51,6 @@ Array<T>::Array(){
 
 template <class T>
 Array<T>::Array(size_t t){
-	cout<<"Array(size_t="<<t<<")\n";
 	if(!t){
 		total_len=0;
 		used_len=0;
@@ -69,7 +67,6 @@ template <class T>
 Array<T>::Array(const Array<T> & a_init){
 	size_t i;
 	
-	cout<<"Array(Array<T> &)\n";
 	total_len = a_init.GetTotalLen();
 	used_len = a_init.GetUsedLen();
 	p = new T[total_len];
@@ -78,21 +75,17 @@ Array<T>::Array(const Array<T> & a_init){
 }
 
 template <class T>
-Array<T>::~Array(){
-	cout<<"~Array()\n";
-	delete []p;
-}
+Array<T>::~Array(){delete []p;}
 
 template <class T>
-size_t Array<T>::GetUsedLen() const {	cout<<"GetLen="<<used_len<<"\n"; return used_len; }
+size_t Array<T>::GetUsedLen() const {return used_len; }
 
 template <class T>
-size_t Array<T>::GetTotalLen() const {	cout<<"GetTot="<<total_len<<"\n"; return total_len; }
+size_t Array<T>::GetTotalLen() const {return total_len; }
 
 template <typename T> 
 Array<T> & Array<T>::operator=(const Array<T> & rhs){
 	T * aux;
-	cout<<"Copiador = \n";
 	if (&rhs == this) {
 		return *this;
 	}
@@ -130,10 +123,10 @@ bool Array<T>::operator!=(const Array<T> & rhs) const{
 }
 
 template <class T>
-T & Array<T>::operator [](const size_t & pos){cout<<"[]noconst\n";return p[pos];}
+T & Array<T>::operator [](const size_t & pos){return p[pos];}
 
 template <class T>
-T const & Array<T>::operator[](const size_t & pos) const{cout<<"[]siconst\n";return p[pos];}
+T const & Array<T>::operator[](const size_t & pos) const{return p[pos];}
 
 template <typename T> 
 std::ostream & operator<< (std::ostream& os,const Array<T> & arr){
@@ -167,9 +160,7 @@ void Array<T>::resize(size_t new_size){
 	// Redimensiono el arreglo, y copio todo hasta donde puedo.
 	// Desde afuera no se ve el redimensionamiento
 	T *aux;
-	
-	cout<<"resize"<<new_size<<"\n";
-	
+		
 	aux = new T[new_size];
 	if( new_size < used_len ){
 		used_len = new_size;
@@ -184,7 +175,6 @@ void Array<T>::resize(size_t new_size){
 
 template <typename T> 
 void Array<T>::push_back(const T & new_thing){
-	cout<<"pushback"<<new_thing<<"\n";
 	// Si es necesario agrandar el arreglo ya que no queda más espacio, lo
 	// agrando por 2.
 	// La decisión de cuando agrandar puede variar, ya que puede ser cuando 
