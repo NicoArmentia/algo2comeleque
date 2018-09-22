@@ -6,6 +6,7 @@
 #include <sstream>
 #include "Array.h"
 #include "Sensor.h"
+#include "Data.h"
 
 using namespace std;
 
@@ -60,45 +61,51 @@ int CreateFromIDArray(Array<Sensor<T>> * & red,string * string_array,size_t len)
 
 /*****************************  ALMACENAMIENTO DE DATOS  ************************************/
 template <class T>
-int get_data(ifstream & infile,Array<Sensor<T>> * sensor_arr,char delimiter,size_t len)
+int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
 {
 
-	T data;
+	Data<T> aux_data;
 	size_t i=0;
 	char ch;
 	string str;
 	stringstream str_st;
 	bool good = false;
 	bool bad = false;
-	bool endline = false;
 
 	while(getline(infile,str)){
 
 		stringstream str_st (str);
 
-		while(str_st >> data && endline != true){
-			 
-	
-			if(str_st.eof()){
-				if (i != len-1)
-					bad = true;
+		while(!str_st.eof()){
+			 	
+			if(str_st >> ch && ch == delimiter){
+
+				aux_data.SetData(0); //limpio data con un valor por default
+				aux_data.DisableData();
 				good = true;
+				cout << "sin datos" << endl;
 			}
 
-			else if(str_st >> ch && ch == delimiter)
-				good = true;
 
-					 
-			else if(str_st.good()){
-				
+			else{
 				str_st.putback(ch);
-				endline = true;
-				good = true;
+					
+				if(str_st >> aux_data){
+					
+					cout << "dato leido: " << aux_data << endl;
+
+
+						aux_data.EnableData();
+						good = true;
+
+				}
+
+				else bad = true;
+				str_st >> ch;
 			}
+					 
 
-			else bad = true;
-
-			if(good) (*sensor_arr)[i].push_back(data); 
+			if(good) (*sensor_arr)[i].push_back(aux_data); 
 
 			if(bad){ 
 				cout << "NO DATA" << endl;
@@ -116,5 +123,61 @@ int get_data(ifstream & infile,Array<Sensor<T>> * sensor_arr,char delimiter,size
 
 }
 
+/*******************************  QUERY  **************************************/
+/*
+template <class T>
+int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
+{
 
+	Data<T> aux_data;
+	size_t i=0;
+	char ch;
+	string str;
+	stringstream str_st;
+	bool good = false;
+	bool bad = false;
+
+	while(getline(infile,str)){
+
+		stringstream str_st (str);
+
+		while(str_st >> aux_data){
+			 
+	
+			if(str_st.eof()){
+				if (i != len-1)
+					bad = true;
+
+				else{
+					good = true;
+					aux_data.EnableData();
+				}
+			}
+
+			else if(str_st >> ch && ch == delimiter){
+
+				aux_data.EnableData();
+				good = true;
+			}
+					 
+			else bad = true;
+
+			if(good) (*sensor_arr)[i].push_back(aux_data); 
+
+			if(bad){ 
+				cout << "NO DATA" << endl;
+				return 1;
+			}	
+
+			i++;
+		}
+
+		i = 0;
+		str.clear();
+	}
+
+	return 0;	
+
+}
+*/
 #endif

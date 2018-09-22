@@ -96,7 +96,7 @@ istream & operator>>(istream &is, Data<T> & d){
 
 	else bad = true;
 
-	if(good) d.data = aux_data;
+	if(good) d.SetData(aux_data);
 
 	if(bad) is.clear(ios::badbit);
 
