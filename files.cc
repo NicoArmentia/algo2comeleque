@@ -10,15 +10,21 @@ int print_file(ifstream &);
 
 int main(void)
 {
-	ifstream infile; 
+	ifstream infile,infile2; 
 	Array<Sensor<Data<double>>> * red;
+	Array<Query<double>> queryx;
 	string * string_array;
-	size_t	 len;
+	size_t len,len_q;
 	size_t i;
+	string ID;
+	size_t init,fin;
 
    	infile.open("/home/julian/Desktop/Algo II/TP0/data.txt",ios::in);
+	infile2.open("/home/julian/Desktop/Algo II/TP0/query.txt",ios::in);
 
 	ParseString(infile,&string_array,&len,',');
+	get_query_arr(infile2,&queryx,&len_q,',');
+	cout << "query length: " << len_q << endl;
 	
 	cout << "---------------------String Array---------------------" << endl;
 	for(i=0;i<len;i++) cout << string_array[i] << endl;
@@ -40,8 +46,16 @@ int main(void)
 	cout << "---------------------Data vectors---------------------" << endl;
 	for(i=0;i<len;i++) cout << (*red)[i].GetArray() << endl;
 
-
+	cout << "--------------------- Get Query ---------------------" << endl;
+	ID = (queryx[0]).GetID();
+	init = (queryx[0]).GetInitPos();
+	fin = (queryx[0]).GetFinPos();
+	cout << "ID: " << ID << endl;   
+	cout << "Initial Position: " << init << endl;
+	cout << "Final Position: " << fin << endl;
+	
 	infile.close();
+	infile2.close();
 
 	return 0;
 }
@@ -64,5 +78,6 @@ int print_file(ifstream & infile){
 
 	return 0;
 }
+
 
 

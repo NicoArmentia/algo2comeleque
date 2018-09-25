@@ -7,6 +7,7 @@
 #include "Array.h"
 #include "Sensor.h"
 #include "Data.h"
+#include "Query.h"
 
 using namespace std;
 
@@ -124,60 +125,28 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 }
 
 /*******************************  QUERY  **************************************/
-/*
-template <class T>
-int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
+template <typename T>
+int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,size_t * len,char delimiter)
 {
 
-	Data<T> aux_data;
-	size_t i=0;
-	char ch;
 	string str;
-	stringstream str_st;
-	bool good = false;
-	bool bad = false;
+	size_t i=0;
+	Query<T> aux_query;
 
 	while(getline(infile,str)){
-
-		stringstream str_st (str);
-
-		while(str_st >> aux_data){
-			 
-	
-			if(str_st.eof()){
-				if (i != len-1)
-					bad = true;
-
-				else{
-					good = true;
-					aux_data.EnableData();
-				}
-			}
-
-			else if(str_st >> ch && ch == delimiter){
-
-				aux_data.EnableData();
-				good = true;
-			}
-					 
-			else bad = true;
-
-			if(good) (*sensor_arr)[i].push_back(aux_data); 
-
-			if(bad){ 
-				cout << "NO DATA" << endl;
-				return 1;
-			}	
-
-			i++;
-		}
-
-		i = 0;
-		str.clear();
+		
+		stringstream str_st(str);
+		aux_query.SetQuery(str_st,delimiter);
+		(*query_arr).push_back(aux_query);
+		i++;
 	}
+	
+	*len = i;
 
-	return 0;	
-
+	return 0;
 }
-*/
+
+
+
+
 #endif

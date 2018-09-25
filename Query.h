@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <fstream>
+#include <sstream>
 #include "Array.h"
 
 using namespace std;
@@ -27,7 +28,9 @@ public:
 
 	Query();
 	Query(const string * &);
-	Query(const string * &,size_t,size_t);  
+	Query(const string * &,size_t,size_t); 
+
+	Query<T> & operator=(const Query<T> &); 
 
 	void SetID(const string &);
 	const string & GetID()const;
@@ -50,11 +53,39 @@ public:
 	void SetState(const qstate_t &);
 	const qstate_t & GetState();
 
-	void SetQuery(ifstream &,char delimiter);
+	void SetQuery(stringstream &,char delimiter);
 
 };
 
 /**************************************** METODOS DE CLASE ****************************************/
+
+template <typename T>
+Query<T>::Query(){}
+
+template <typename T>
+Query<T>::Query(const string * & s){IDs = s;}
+
+template <typename T>
+Query<T>::Query(const string * & s,size_t init,size_t fin){
+
+	IDs = s;
+	init_pos = init;
+	fin_pos = fin;
+}
+
+template <typename T>
+Query<T> & Query<T>::operator=(const Query<T> & q){
+
+	IDs = q.IDs;
+	init_pos = q.init_pos;
+	fin_pos = q.fin_pos;
+	min = q.min;
+	max = q.max;
+	prom = q.prom;
+	state = q.state;
+	
+	return *this;
+}
 
 template <typename T>
 void Query<T>::SetID(const string & s){IDs = s;}
@@ -90,20 +121,19 @@ template <typename T>
 const qstate_t & Query<T>::GetState(){return state;}
 
 template <typename T>
-void Query<T>::SetQuery(ifstream & infile,char delimiter){
+void Query<T>::SetQuery(stringstream & infile,char delimiter){
 
 	char ch;
 	size_t aux_init;
 	size_t aux_fin;
 	string aux_s;
 
+	if(getline(infile,aux_s,delimiter) && infile >> aux_init && infile >> ch
+		 && ch == delimiter && infile >> aux_fin){
 
-	if(getline(infile,aux_s,delimiter) && infile >> aux_init && infile >> aux_init
-			 && infile >> ch && ch == delimiter && infile >> aux_fin){
-
-		IDs = aux_s;
-		init_pos = aux_init;
-		fin_pos = aux_fin;
+		SetID(aux_s);
+		SetInitPos(aux_init);
+		SetFinPos(aux_fin);
 	}
 	
 	else{
@@ -111,6 +141,7 @@ void Query<T>::SetQuery(ifstream & infile,char delimiter){
 		 return;
 	}
 
+	return;
 }
 
 		
