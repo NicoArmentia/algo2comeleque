@@ -126,18 +126,29 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 
 /*******************************  QUERY  **************************************/
 template <typename T>
-int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,size_t * len,char delimiter)
+int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * len,char delimiter)
 {
 
 	string str;
 	size_t i=0;
 	Query<T> aux_query;
+	size_t position;
+	bool ID_found;
 
 	while(getline(infile,str)){
 		
 		stringstream str_st(str);
+
 		aux_query.SetQuery(str_st,delimiter);
+		
+		ID_found = aux_query.SearchIDFromSensor(sensor_arr,position);
+
+		if(ID_found == true) aux_query.SetDataQuery(sensor_arr[position].GetArray());
+
+		else aux_query.SetState(UNKNOWN_ID);
+
 		(*query_arr).push_back(aux_query);
+
 		i++;
 	}
 	

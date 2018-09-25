@@ -5,20 +5,27 @@
 #include <fstream>
 #include <sstream>
 #include "Array.h"
+#include "Data.h"
+#include "Sensor.h"
 
 using namespace std;
 
 #ifndef _QUERY_H_INCLUDED_
 #define _QUERY_H_INCLUDED_
 
-typedef enum {OK,BAD_QUERY,NO_DATA,UNKNOWN_ID} qstate_t;
+typedef enum {OK=0,BAD_QUERY=1,NO_DATA=2,UNKNOWN_ID=3} qstate_t;
+
+static string State_Dict[4] = {"OK","BAD_QUERY","NO_DATA","UNKNOWN_ID"};
 
 template <typename T>
 class Query{
 
 	string IDs;
+	Array<Data<T>> qdata;
+	size_t len=0;
 	size_t init_pos;
 	size_t fin_pos;
+	size_t data_number=0;  //Cantidad de datos activos dentro del arreglo de datos
 	T min;
 	T max;
 	T prom;
@@ -34,6 +41,13 @@ public:
 
 	void SetID(const string &);
 	const string & GetID()const;
+
+	bool SearchIDFromSensor(const Array<Sensor<Data<T>>>&,size_t &);
+
+	void SetDataQuery(const Array<Data<T>> &); //Para el uso de esta funcion es necesario tener init_pos y fin_pos
+
+	size_t GetLength() const;
+	size_t GetDataNum() const;
 	
 	void SetInitPos(size_t);
 	size_t GetInitPos() const;
@@ -54,6 +68,9 @@ public:
 	const qstate_t & GetState();
 
 	void SetQuery(stringstream &,char delimiter);
+
+	template <typename TT>
+	friend ostream& operator<<(ostream&,const Query<TT>&);
 
 };
 
@@ -77,6 +94,9 @@ template <typename T>
 Query<T> & Query<T>::operator=(const Query<T> & q){
 
 	IDs = q.IDs;
+	qdata = q.qdata;
+	data_number = q.data_number;
+	len = q.len;
 	init_pos = q.init_pos;
 	fin_pos = q.fin_pos;
 	min = q.min;
@@ -86,6 +106,36 @@ Query<T> & Query<T>::operator=(const Query<T> & q){
 	
 	return *this;
 }
+
+template <typename T>
+void Query<T>::SetDataQuery(const Array<Data<T>> & data_arr){
+
+	size_t data_len = data_arr.GetUsedLen();
+	bool enabled;
+
+	if(data_len < init_pos || data_len < fin_pos){
+
+		state = NO_DATA;
+		return;
+	}
+
+	qdata = data_arr;
+	len = data_len;
+
+	for(size_t i =0;i<len;i++){
+		enabled = data_arr[i].GetState();
+		if(enabled == true)
+			data_number++;
+	}
+	return;
+}
+
+template <typename T>
+size_t Query<T>::GetLength() const{return len;}	
+
+template <typename T>
+size_t Query<T>::GetDataNum() const{return data_number;}
+	
 
 template <typename T>
 void Query<T>::SetID(const string & s){IDs = s;}
@@ -134,6 +184,8 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 		SetID(aux_s);
 		SetInitPos(aux_init);
 		SetFinPos(aux_fin);
+		SetState(OK);
+
 	}
 	
 	else{
@@ -144,7 +196,26 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 	return;
 }
 
-		
+template <typename T>
+bool Query<T>::SearchIDFromSensor(const Array<Sensor<Data<T>>>& sensor_arr,size_t & position){
 
+	for(size_t j=0;j<sensor_arr.GetTotalLen();j++){
+
+		if(sensor_arr[j].GetID() == GetID()){
+			position = j;
+			return true;
+		}
+	}
+
+	return false;			
+}		
+
+
+template <typename T>
+ostream& operator<<(ostream & os,const Query<T> & q){
+
+	cout << q.qdata;
+	return os;
+}
 
 #endif
