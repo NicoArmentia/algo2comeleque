@@ -24,7 +24,7 @@ public:
 	~Data();
 	T GetData();
 	void SetData(const T &);
-	bool GetState();
+	const bool & GetState() const;
 	void EnableData();
 	void DisableData();
 	Data<T> & operator=(const Data<T> &);
@@ -70,7 +70,7 @@ template <typename T>
 void Data<T>::SetData(const T & d) {data = d;}
 
 template <typename T>
-bool Data<T>::GetState(){return enabled;}
+const bool & Data<T>::GetState() const{return enabled;}
 
 template <typename T>
 void Data<T>::EnableData(){enabled = true;}

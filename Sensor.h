@@ -12,6 +12,7 @@ template <typename T>
 class Sensor{
 // Atributos privados
 private:
+
 	string ID;	// Nombre, cadena de caracteres
 	Array<T> data;	//  Vector de datos
 	

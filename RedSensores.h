@@ -1,9 +1,14 @@
+#ifndef _REDSENSORES_H_INCLUDED_
+#define _REDSENSORES_H_INCLUDED_
+
+
 #include <cassert>
 #include <iostream>
 #include <stdio.h>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+
 #include "Array.h"
 #include "Sensor.h"
 #include "Data.h"
@@ -11,13 +16,10 @@
 
 using namespace std;
 
-#ifndef _REDSENSORES_H_INCLUDED_
-#define _REDSENSORES_H_INCLUDED_
-
 
 /************************************** Almacenamiento de IDs *************************************/
 
-int ParseString(ifstream & infile,string ** string_array,size_t * len,char delimiter)
+int ParseString(istream & infile,string ** string_array,size_t * len,char delimiter)
 {
 
 	size_t i=0;
@@ -62,7 +64,7 @@ int CreateFromIDArray(Array<Sensor<T>> * & red,string * string_array,size_t len)
 
 /*****************************  ALMACENAMIENTO DE DATOS  ************************************/
 template <class T>
-int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
+int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
 {
 
 	Data<T> aux_data;
@@ -126,7 +128,7 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 
 /*******************************  QUERY  **************************************/
 template <typename T>
-int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * len,char delimiter)
+int get_query_arr(istream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * len,char delimiter)
 {
 
 	string str;
