@@ -217,4 +217,42 @@ ostream& operator<<(ostream & os,const Query<T> & q){
 	return os;
 }
 
+template <typename T>
+void Query<T>::CalcMin(){
+	bool min_set = false;
+	size_t len = qdata.GetUsedLen();
+	for(size_t i = 0;i<len;i++){
+		if(min_set == true)
+			min = Min<T>(min,qdata[i]);
+		else{
+			min = qdata[i];
+			min_set = true;
+		}
+	}
+}
+
+template <typename T>
+void Query<T>::CalcMax(){
+	bool max_set = false;
+	size_t len = qdata.GetUsedLen();
+	for(size_t i = 0;i<len;i++){
+		if(max_set == true)
+			max = Max<T>(max,qdata[i]);
+		else{
+			max = qdata[i];
+			max_set = true;
+		}
+	}
+}
+
+template <typename T>
+void Query<T>::CalcProm(){
+	prom = 0;
+	size_t len = qdata.GetUsedLen();
+	for(size_t i = 0;i<len;i++){
+		prom += qdata[i];
+	}
+	prom/=len;
+}
+
 #endif
