@@ -52,7 +52,7 @@ int main(void)
 	ID = (queryx[0]).GetID();
 	init = (queryx[0]).GetInitPos();
 	fin = (queryx[0]).GetFinPos();
-	valid_data = (queryx[0]).GetDataNum();
+	valid_data = (queryx[0]).GetLength();
 	cout << "ID: " << ID << endl;   
 	cout << "Initial Position: " << init << endl;
 	cout << "Final Position: " << fin << endl;
