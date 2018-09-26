@@ -212,8 +212,17 @@ bool Query<T>::SearchIDFromSensor(const Array<Sensor<Data<T>>>& sensor_arr,size_
 
 template <typename T>
 ostream& operator<<(ostream & os,const Query<T> & q){
-
-	cout << q.qdata;
+	if(q.state != OK)
+		os<<State_Dict[q.state]<<endl;
+	else{
+	
+	//	cout << State_Dict[q.state] << endl;
+	
+		os << q.prom << ',';
+		os << q.min << ',';
+		os << q.max << ',';
+		os << q.data_number << endl;
+	}
 	return os;
 }
 
