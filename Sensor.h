@@ -43,15 +43,11 @@ public:
 template <typename T>	// Constructor por defecto
 Sensor<T>::Sensor(){}
 
-template <typename T>	// Constructor por copia de ID
-Sensor<T>::Sensor(const string & s){
-	ID = s;
-}
+template <typename T>	// Constructor por ID
+Sensor<T>::Sensor(const string & s){ID = s;}
 
-template <typename T>	// Constructor por copia de datos
-Sensor<T>::Sensor(const Array<T> & A){
-	data = A;
-}
+template <typename T>	// Constructor por datos
+Sensor<T>::Sensor(const Array<T> & A){data = A;}
 
 template <typename T>	// Constructor completo
 Sensor<T>::Sensor(const string & s, const Array<T> & A){
@@ -59,7 +55,7 @@ Sensor<T>::Sensor(const string & s, const Array<T> & A){
 	data = A;
 }
 
-template <typename T>	// Constructor por copia del mismo tipo
+template <typename T>	// Constructor por copia
 Sensor<T>::Sensor(const Sensor & init){
 	ID = init.GetID();
 	data = init.GetArray();
@@ -69,8 +65,7 @@ template <typename T>	// Destructor
 Sensor<T>::~Sensor(){}
 
 template <typename T>	// Setea el ID del sensor
-void Sensor<T>::SetID(const string & s){	
-	ID=s;}	
+void Sensor<T>::SetID(const string & s){ID=s;}	
 
 template <typename T>	// Devuelve el ID del sensor
 string Sensor<T>::GetID()const{return ID;}

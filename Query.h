@@ -27,10 +27,10 @@ class Query{
 	Array<Data<T>> qdata;
 	size_t len=0;
 	size_t init_pos=0;
-	size_t fin_pos=0;
+	size_t fin_pos=5;
 	size_t data_number=0;  //Cantidad de datos activos dentro del arreglo de datos
 	T min = 10000000;
-	T max =-1;
+	T max = -1;
 	T prom = 0;
 	qstate_t state = OK;
 
@@ -155,12 +155,20 @@ size_t Query<T>::GetFinPos() const{return fin_pos;}
 template <typename T>
 void Query<T>::CalcMin(){
 	bool min_set = false;
+	
+	//cout << init_pos << '|' << fin_pos << endl;
+	
 	for(size_t i=init_pos;i<fin_pos;i++){
+	
+	//	cout << qdata[i].GetData() << endl;
+	
 		if(qdata[i].GetState() == true){
 			if(min_set == true)
 				min = Min<T>(min,qdata[i].GetData());
-			else
+			else{
 				min = qdata[i].GetData();
+				min_set = true;
+			}
 			//var_cant_datos_usados++
 		}
 	}
@@ -176,9 +184,10 @@ void Query<T>::CalcMax(){
 		if(qdata[i].GetState() == true){
 			if(max_set == true)
 				max = Max<T>(max,qdata[i].GetData());
-			else
+			else{
 				max = qdata[i].GetData();
-			//var_cant_datos_usados++
+				max_set = true;
+			}//var_cant_datos_usados++
 		}
 	}
 }
@@ -194,9 +203,11 @@ void Query<T>::CalcProm(){
 		if(qdata[i].GetState() == true){
 			if(any_value == true)
 				prom+=qdata[i].GetData();
-			else
+			else{
 				prom = qdata[i].GetData();
-		used_data++;
+				any_value = true;
+			}
+			used_data++;
 		}
 	}
 	prom/=used_data;
@@ -251,6 +262,9 @@ ostream& operator<<(ostream & os,const Query<T> & q){
 	if(q.state != OK)
 		os<<State_Dict[q.state]<<endl;
 	else{
+	
+	//	cout << State_Dict[q.state] << endl;
+	
 		os << q.prom << ',';
 		os << q.min << ',';
 		os << q.max << ',';

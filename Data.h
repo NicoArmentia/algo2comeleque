@@ -42,7 +42,10 @@ template <typename T>
 Data<T>::Data(){enabled = false;}
 
 template <typename T>
-Data<T>::Data(const T & d){data = d;}
+Data<T>::Data(const T & d){
+	data = d;
+	enabled = true;
+}
 
 template <typename T>
 Data<T>::Data(const bool & state){enabled = state;}
@@ -55,7 +58,6 @@ Data<T>::Data(const T & d,const bool & state){
 
 template <typename T>
 Data<T>::Data(const Data & init_data){
-
 	data = init_data.data;
 	enabled = init_data.enabled;
 }
@@ -80,7 +82,6 @@ void Data<T>::DisableData(){enabled = false;}
 
 template <typename T>
 ostream& operator<<(ostream & os,const Data<T> & d){
-
 	cout << d.data;
 	return os;
 }
