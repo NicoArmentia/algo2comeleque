@@ -152,12 +152,15 @@ int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sens
 		stringstream str_st(str);
 
 		aux_query.SetQuery(str_st,delimiter);
+
+		if(aux_query.GetState() == OK){
 		
-		ID_found = aux_query.SearchIDFromSensor(sensor_arr,position);
+			ID_found = aux_query.SearchIDFromSensor(sensor_arr,position);
 
-		if(ID_found == true) aux_query.SetDataQuery(sensor_arr[position].GetArray());
+			if(ID_found == true) aux_query.SetDataQuery(sensor_arr[position].GetArray());
 
-		else aux_query.SetState(UNKNOWN_ID);
+			else aux_query.SetState(UNKNOWN_ID);
+		}
 
 		(*query_arr).push_back(aux_query);
 

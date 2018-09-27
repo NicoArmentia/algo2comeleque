@@ -24,8 +24,8 @@ class Query{
 	string IDs;
 	Array<T> qdata;
 	size_t len=0;
-	size_t init_pos;
-	size_t fin_pos;
+	size_t init_pos=0;
+	size_t fin_pos=0;
 	T min;
 	T max;
 	T prom;
@@ -180,10 +180,11 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 	size_t aux_fin;
 	string aux_s;
 
-	if(getline(infile,aux_s,delimiter) && infile >> aux_init && infile >> ch
-		 && ch == delimiter && infile >> aux_fin){
+	if(getline(infile,aux_s,delimiter)) SetID(aux_s);
 
-		SetID(aux_s);
+	if(infile >> aux_init && infile >> ch && ch == delimiter && infile >> aux_fin){
+
+			
 		SetInitPos(aux_init);
 		SetFinPos(aux_fin);
 		SetState(OK);
