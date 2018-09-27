@@ -47,8 +47,9 @@ int main(void)
 	cout << "--------------------- Get Query ---------------------" << endl;
 
 	get_query_arr(infile2,&queryx,*red,&len_q,',');
-	cout << "Query arr length: " << len_q << endl;
 
+
+	cout << "Query arr length: " << len_q << endl;
 	ID = (queryx[0]).GetID();
 	init = (queryx[0]).GetInitPos();
 	fin = (queryx[0]).GetFinPos();
@@ -58,11 +59,31 @@ int main(void)
 	cout << "Final Position: " << fin << endl;
 	cout << "Number of valid data: " << valid_data << endl;
 	cout << State_Dict[queryx[0].GetState()] << endl;
-
 	size_t qdata_len = queryx[0].GetLength();
 	cout << "qdata_arr len: " << qdata_len << endl;
 
+	queryx[0].DoQuery();
+
 	cout << "data query: " << queryx[0] << endl;
+ 
+
+	
+	cout << "Query arr length: " << len_q << endl;
+	ID = (queryx[1]).GetID();
+	init = (queryx[1]).GetInitPos();
+	fin = (queryx[1]).GetFinPos();
+	valid_data = (queryx[1]).GetLength();
+	cout << "ID: " << ID << endl;   
+	cout << "Initial Position: " << init << endl;
+	cout << "Final Position: " << fin << endl;
+	cout << "Number of valid data: " << valid_data << endl;
+	cout << State_Dict[queryx[1].GetState()] << endl;
+	qdata_len = queryx[1].GetLength();
+	cout << "qdata_arr len: " << qdata_len << endl;
+
+	queryx[1].DoQuery();
+
+	cout << "data query: " << queryx[1] << endl;
 	
 	infile.close();
 	infile2.close();
