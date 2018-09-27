@@ -22,8 +22,9 @@ template <typename T>
 class Query{
 
 	string IDs;
+	size_t ids_len=0;
 	Array<T> qdata;
-	size_t len=0;
+	size_t data_len=0;
 	size_t init_pos=0;
 	size_t fin_pos=0;
 	T min;
@@ -67,6 +68,7 @@ public:
 	void SetQuery(stringstream &,char delimiter);
 
 	void SetDataQuery(const Array<Data<T>> &); //Para el uso de esta funcion es necesario tener init_pos y fin_pos
+	void SetDataQuery(const Array<Array<Data<T>>> &,size_t);
 
 	void DoQuery();
 
@@ -97,7 +99,7 @@ Query<T> & Query<T>::operator=(const Query<T> & q){
 
 	IDs = q.IDs;
 	qdata = q.qdata;
-	len = q.len;
+	data_len = q.data_len;
 	init_pos = q.init_pos;
 	fin_pos = q.fin_pos;
 	min = q.min;
@@ -109,35 +111,7 @@ Query<T> & Query<T>::operator=(const Query<T> & q){
 }
 
 template <typename T>
-void Query<T>::SetDataQuery(const Array<Data<T>> & data_arr){
-
-	size_t data_len = data_arr.GetUsedLen();
-	size_t i=0,j=0;
-
-	if(data_len < init_pos){
-
-		state = NO_DATA;
-		return;
-	}
-
-	qdata.clear();
-
-	for(i=init_pos;i<fin_pos;i++){
-
-		if(data_arr[i].GetState() == true){
-			qdata.push_back(data_arr[i].GetData());	
-			j++;
-		}
-	}
-
-	len = j;
-
-
-	return;
-}
-
-template <typename T>
-size_t Query<T>::GetLength() const{return len;}	
+size_t Query<T>::GetLength() const{return data_len;}	
 	
 template <typename T>
 void Query<T>::SetID(const string & s){IDs = s;}
@@ -200,6 +174,71 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 }
 
 template <typename T>
+void Query<T>::SetDataQuery(const Array<Data<T>> & data_arr){
+
+	size_t data_len_aux = data_arr.GetUsedLen();
+	size_t i=0,j=0;
+
+	if(data_len_aux < init_pos){
+
+		state = NO_DATA;
+		return;
+	}
+
+	qdata.clear();
+
+	if(data_len_aux<fin_pos) fin_pos = data_len_aux;
+
+	for(i=init_pos;i<fin_pos;i++){
+
+		if(data_arr[i].GetState() == true){
+			qdata.push_back(data_arr[i].GetData());	
+			j++;
+		}
+	}
+
+	data_len = j;
+
+
+	return;
+}
+
+template <typename T>
+void Query<T>::SetDataQuery(const Array<Array<Data<T>>> & d_arr,size_t d_arr_len){
+
+	size_t d_len = (d_arr[0]).GetUsedLen();
+	size_t i,j,count = 0;
+	T	aux;
+
+	if(d_len < init_pos){
+
+		state = NO_DATA;
+		return;
+	}
+
+	qdata.clear();
+
+	if(d_len<fin_pos) fin_pos = d_len;
+
+	for(i=init_pos;i<fin_pos;i++){
+		aux = 0;
+		count = 0;
+		for(j=0;j<d_arr_len;j++){
+			if( ((d_arr[j])[i]).GetState() == true ){
+				aux += ((d_arr[j])[i]).GetData();
+				count++;
+			}
+		}
+		aux/=count;
+		qdata.push_back(aux);
+	}
+
+	data_len = qdata.GetUsedLen();
+
+	return;
+}
+
+template <typename T>
 bool Query<T>::SearchIDFromSensor(const Array<Sensor<Data<T>>>& sensor_arr,size_t & position){
 
 	for(size_t j=0;j<sensor_arr.GetTotalLen();j++){
@@ -224,7 +263,7 @@ ostream& operator<<(ostream & os,const Query<T> & q){
 		os << q.prom << ',';
 		os << q.min << ',';
 		os << q.max << ',';
-		os << q.len << endl;
+		os << q.data_len << endl;
 	}
 	return os;
 }
@@ -233,7 +272,7 @@ ostream& operator<<(ostream & os,const Query<T> & q){
 template <typename T>
 void Query<T>::CalcMin(){
 	bool min_set = false;
-	for(size_t i = 0;i<len;i++){
+	for(size_t i = 0;i<data_len;i++){
 		if(min_set == true)
 			min = Min<T>(min,qdata[i]);
 		else{
@@ -246,7 +285,7 @@ void Query<T>::CalcMin(){
 template <typename T>
 void Query<T>::CalcMax(){
 	bool max_set = false;
-	for(size_t i = 0;i<len;i++){
+	for(size_t i = 0;i<data_len;i++){
 		if(max_set == true)
 			max = Max<T>(max,qdata[i]);
 		else{
@@ -258,10 +297,10 @@ void Query<T>::CalcMax(){
 
 template <typename T>
 void Query<T>::CalcProm(){
-	for(size_t i = 0;i<len;i++){
+	for(size_t i = 0;i<data_len;i++){
 		prom += qdata[i];
 	}
-	prom = prom/len;
+	prom = prom/data_len;
 }
 
 template <typename T>

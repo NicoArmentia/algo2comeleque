@@ -76,7 +76,6 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 	while(getline(infile,str)){
 
 		stringstream str_st (str);
-		cout << "hola" << endl;
 
 		while(i<len){
 			 	
@@ -138,14 +137,16 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 
 /*******************************  QUERY  **************************************/
 template <typename T>
-int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * len,char delimiter)
+int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * qlen,char delimiter)
 {
 
 	string str;
-	size_t i=0;
+	size_t i=0,j=0;
 	Query<T> aux_query;
 	size_t position;
 	bool ID_found;
+	Array<Array<Data<T>>> * aux_arr;
+	size_t aux_len = sensor_arr.GetTotalLen();
 
 	while(getline(infile,str)){
 		
@@ -159,15 +160,27 @@ int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sens
 
 			if(ID_found == true) aux_query.SetDataQuery(sensor_arr[position].GetArray());
 
-			else aux_query.SetState(UNKNOWN_ID);
-		}
+			else if (aux_query.GetID() == "-"){ 
+				
+				aux_arr = new Array<Array<Data<T>>>(aux_len);
 
+				for(;j<aux_len;j++) 
+					(*aux_arr).push_back(sensor_arr[j].GetArray());
+
+				aux_query.SetDataQuery(*aux_arr,aux_len);
+
+				delete aux_arr;
+			}
+
+			else aux_query.SetState(UNKNOWN_ID); 
+		}
+		
 		(*query_arr).push_back(aux_query);
 
 		i++;
 	}
 	
-	*len = i;
+	*qlen = i;
 
 	return 0;
 }
