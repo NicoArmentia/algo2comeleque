@@ -1,14 +1,9 @@
-#ifndef _REDSENSORES_H_INCLUDED_
-#define _REDSENSORES_H_INCLUDED_
-
-
 #include <cassert>
 #include <iostream>
 #include <stdio.h>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
-
 #include "Array.h"
 #include "Sensor.h"
 #include "Data.h"
@@ -16,10 +11,13 @@
 
 using namespace std;
 
+#ifndef _REDSENSORES_H_INCLUDED_
+#define _REDSENSORES_H_INCLUDED_
+
 
 /************************************** Almacenamiento de IDs *************************************/
 
-int ParseString(istream & infile,string ** string_array,size_t * len,char delimiter)
+int ParseString(ifstream & infile,string ** string_array,size_t * len,char delimiter)
 {
 
 	size_t i=0;
@@ -64,7 +62,7 @@ int CreateFromIDArray(Array<Sensor<T>> * & red,string * string_array,size_t len)
 
 /*****************************  ALMACENAMIENTO DE DATOS  ************************************/
 template <class T>
-int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
+int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
 {
 
 	Data<T> aux_data;
@@ -78,8 +76,9 @@ int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter
 	while(getline(infile,str)){
 
 		stringstream str_st (str);
+		cout << "hola" << endl;
 
-		while(!str_st.eof()){
+		while(i<len){
 			 	
 			if(str_st >> ch && ch == delimiter){
 
@@ -89,12 +88,13 @@ int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter
 				cout << "sin datos" << endl;
 			}
 
-
+			
 			else{
+
 				str_st.putback(ch);
 					
 				if(str_st >> aux_data){
-					
+	
 					cout << "dato leido: " << aux_data << endl;
 
 
@@ -102,20 +102,30 @@ int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter
 						good = true;
 
 				}
-
-				else bad = true;
-				str_st >> ch;
 			}
+
+			if(good == false && i==len-1){
+
+					aux_data.SetData(0); //limpio data con un valor por default
+					aux_data.DisableData();
+					good = true;
+					cout << "sin datos" << endl; 
+			}
+
+			else bad = true;
+
+			str_st >> ch;
 					 
+			if(good) (*sensor_arr)[i].push_back(aux_data);
 
-			if(good) (*sensor_arr)[i].push_back(aux_data); 
-
-			if(bad){ 
+			else if(bad){ 
 				cout << "NO DATA" << endl;
 				return 1;
 			}	
 
 			i++;
+			good = false;
+			bad = false;
 		}
 
 		i = 0;
@@ -128,7 +138,7 @@ int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter
 
 /*******************************  QUERY  **************************************/
 template <typename T>
-int get_query_arr(istream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * len,char delimiter)
+int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * len,char delimiter)
 {
 
 	string str;
