@@ -7,6 +7,7 @@
 #include "Array.h"
 #include "Data.h"
 #include "Sensor.h"
+#include "func_template.h"
 
 using namespace std;
 
@@ -67,6 +68,8 @@ public:
 
 	void SetDataQuery(const Array<Data<T>> &); //Para el uso de esta funcion es necesario tener init_pos y fin_pos
 
+	void DoQuery();
+
 
 	template <typename TT>
 	friend ostream& operator<<(ostream&,const Query<TT>&);
@@ -117,9 +120,9 @@ void Query<T>::SetDataQuery(const Array<Data<T>> & data_arr){
 		return;
 	}
 
-	size_t aux_len = fin_pos - init_pos;
+	qdata.clear();
 
-	for(i=0;i<aux_len;i++){
+	for(i=init_pos;i<fin_pos;i++){
 
 		if(data_arr[i].GetState() == true){
 			qdata.push_back(data_arr[i].GetData());	
@@ -216,20 +219,19 @@ ostream& operator<<(ostream & os,const Query<T> & q){
 		os<<State_Dict[q.state]<<endl;
 	else{
 	
-	//	cout << State_Dict[q.state] << endl;
-	
+		os << q.qdata << endl;
 		os << q.prom << ',';
 		os << q.min << ',';
 		os << q.max << ',';
-		os << q.data_number << endl;
+		os << q.len << endl;
 	}
 	return os;
 }
 
+
 template <typename T>
 void Query<T>::CalcMin(){
 	bool min_set = false;
-	size_t len = qdata.GetUsedLen();
 	for(size_t i = 0;i<len;i++){
 		if(min_set == true)
 			min = Min<T>(min,qdata[i]);
@@ -243,7 +245,6 @@ void Query<T>::CalcMin(){
 template <typename T>
 void Query<T>::CalcMax(){
 	bool max_set = false;
-	size_t len = qdata.GetUsedLen();
 	for(size_t i = 0;i<len;i++){
 		if(max_set == true)
 			max = Max<T>(max,qdata[i]);
@@ -256,12 +257,17 @@ void Query<T>::CalcMax(){
 
 template <typename T>
 void Query<T>::CalcProm(){
-	prom = 0;
-	size_t len = qdata.GetUsedLen();
 	for(size_t i = 0;i<len;i++){
 		prom += qdata[i];
 	}
-	prom/=len;
+	prom = prom/len;
 }
 
+template <typename T>
+void Query<T>::DoQuery(){
+
+	CalcMin();
+	CalcMax();
+	CalcProm();
+}
 #endif
