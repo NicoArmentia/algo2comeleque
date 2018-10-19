@@ -169,7 +169,7 @@ void Array<T>::resize(size_t new_size){
 	for( size_t i=0;i<used_len;++i){
 		aux[i] = p[i];
 	}
-	delete [] p;
+	if(p!=NULL) delete [] p;
 	p = aux;
 	total_len = new_size;
 }

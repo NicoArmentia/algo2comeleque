@@ -17,7 +17,7 @@ using namespace std;
 
 /************************************** Almacenamiento de IDs *************************************/
 
-int ParseString(ifstream & infile,string ** string_array,size_t * len,char delimiter)
+int ParseString(istream & infile,Array<string> * & string_array,size_t & len,char delimiter)
 {
 
 	size_t i=0;
@@ -34,13 +34,13 @@ int ParseString(ifstream & infile,string ** string_array,size_t * len,char delim
 		i++;
 	}
 
-	*len = delimit_number+1;
+	len = delimit_number+1;
 
-	*string_array = new string[*len];
+	string_array = new Array<string>(len);
 
 	infile.seekg(0, ios::beg);
 
-	for(i=0;i<(*len)-1;i++)
+	for(i=0;i<len-1;i++)
 		getline(infile,(*string_array)[i],delimiter);
 
 	getline(infile,(*string_array)[i]);
@@ -49,7 +49,7 @@ int ParseString(ifstream & infile,string ** string_array,size_t * len,char delim
 }
 
 template <class T>
-int CreateFromIDArray(Array<Sensor<T>> * & red,string * string_array,size_t len)
+int CreateFromIDArray(Array<Sensor<T>> * & red,const Array<string> & string_array,size_t len)
 {
 
 	red = new Array<Sensor<T>>(len);
@@ -62,7 +62,7 @@ int CreateFromIDArray(Array<Sensor<T>> * & red,string * string_array,size_t len)
 
 /*****************************  ALMACENAMIENTO DE DATOS  ************************************/
 template <class T>
-int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
+int get_data(istream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimiter,size_t len)
 {
 
 	Data<T> aux_data;
@@ -84,31 +84,23 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 				aux_data.SetData(0); //limpio data con un valor por default
 				aux_data.DisableData();
 				good = true;
-				cout << "sin datos" << endl;
 			}
 
-			
 			else{
 
 				str_st.putback(ch);
 					
 				if(str_st >> aux_data){
-	
-					cout << "dato leido: " << aux_data << endl;
-
 
 						aux_data.EnableData();
 						good = true;
-
 				}
 			}
 
 			if(good == false && i==len-1){
-
 					aux_data.SetData(0); //limpio data con un valor por default
 					aux_data.DisableData();
 					good = true;
-					cout << "sin datos" << endl; 
 			}
 
 			else bad = true;
@@ -118,7 +110,7 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 			if(good) (*sensor_arr)[i].push_back(aux_data);
 
 			else if(bad){ 
-				cout << "NO DATA" << endl;
+				cerr << "Invalid data base" << endl;
 				return 1;
 			}	
 
@@ -137,7 +129,7 @@ int get_data(ifstream & infile,Array<Sensor<Data<T>>> * sensor_arr,char delimite
 
 /*******************************  QUERY  **************************************/
 template <typename T>
-int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * qlen,char delimiter)
+int get_query_arr(istream & infile,Array<Query<T>> & query_arr,const Array<Sensor<Data<T>>> & sensor_arr,size_t * qlen,char delimiter)
 {
 
 	string str;
@@ -164,7 +156,7 @@ int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sens
 				
 				aux_arr = new Array<Array<Data<T>>>(aux_len);
 
-				for(;j<aux_len;j++) 
+				for(j=0;j<aux_len;j++) 
 					(*aux_arr).push_back(sensor_arr[j].GetArray());
 
 				aux_query.SetDataQuery(*aux_arr,aux_len);
@@ -175,7 +167,7 @@ int get_query_arr(ifstream & infile,Array<Query<T>> * query_arr,const Array<Sens
 			else aux_query.SetState(UNKNOWN_ID); 
 		}
 		
-		(*query_arr).push_back(aux_query);
+		query_arr.push_back(aux_query);
 
 		i++;
 	}

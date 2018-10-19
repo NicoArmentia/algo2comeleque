@@ -13,6 +13,7 @@
 #include "help.h"
 
 #define DBG(x) cerr << #x << ":" << (x) << endl
+#define DELIMITER ','
 
 /*
 
@@ -104,59 +105,97 @@ static void opt_help(string const &arg){
 }
 
 
+/*********************************************** MAIN *************************************************/
+
 int main(int argc, char * const argv[])
 {
 	cmdline cmdl(options);
 	Array<Sensor<Data<double>>> * red;
 	Array<Query<double>> queryx;
-	string * string_array;
-	size_t len,len_q;
+	Array<string> * string_array;
+	size_t len;
+	size_t len_q;
+	/*string ID;
 	size_t i;
-	string ID;
-	size_t init,fin,valid_data;
+	size_t init,fin,valid_data;*/
 
 	
 	cmdl.parse(argc, argv);
+
+	ParseString(*data_stream,string_array,len,DELIMITER);
 	
-	ParseString(*data_stream,&string_array,&len,',');
+	//cout << "---------------------String Array---------------------" << endl;
+	//for(i=0;i<len;i++) cout << string_array[i] << endl;
 
-	cout << "---------------------String Array---------------------" << endl;
-	for(i=0;i<len;i++) cout << string_array[i] << endl;
 
-	cout << "----------------CreateFromIDArray---------------------" << endl;
+	//cout << "----------------CreateFromIDArray---------------------" << endl;
 
-	CreateFromIDArray(red,string_array,len);
+	CreateFromIDArray(red,*string_array,len);
 
-	cout << "---------------------Sensor Array---------------------" << endl;
-	for(i=0;i<len;i++) cout << (*red)[i].GetID() << endl;
-	
-	cout << "-----------------------Get data-----------------------" << endl;
-	get_data(*data_stream,red,',',len);
 
-	cout << "---------------------Data vectors---------------------" << endl;
-	for(i=0;i<len;i++) cout << (*red)[i].GetArray() << endl;
-
-	cout << "--------------------- Get Query ---------------------" << endl;
-
-	get_query_arr(*input_stream,&queryx,*red,&len_q,',');
-	cout << "Query arr length: " << len_q << endl;
+	//cout << "---------------------Sensor Array---------------------" << endl;
+	//for(i=0;i<len;i++) cout << (*red)[i].GetID() << endl;
 
 	
-//mis pruebas	
-	size_t t;
-	t = queryx.GetUsedLen();
-	for(size_t j=0;j<t;j++){
-		queryx[i].CalcMax();
-		queryx[i].CalcMin();
-		queryx[i].CalcProm();
-		*output_stream << queryx[i] << endl;
+	//cout << "-----------------------Get data-----------------------" << endl;
+	get_data(*data_stream,red,DELIMITER,len);
+
+
+	//cout << "---------------------Data vectors---------------------" << endl;
+	//for(i=0;i<len;i++) cout << (*red)[i].GetArray() << endl;
+
+	//cout << "--------------------- Get Query ---------------------" << endl;
+
+	get_query_arr(*input_stream,queryx,*red,&len_q,DELIMITER);
+
+	for(size_t k=0;k<len_q;k++){
+		 queryx[k].DoQuery();
+		 *output_stream << queryx[k];
 	}
 
+	/*cout << "Query arr length: " << len_q << endl;
+	ID = (queryx[0]).GetID();
+	init = (queryx[0]).GetInitPos();
+	fin = (queryx[0]).GetFinPos();
+	valid_data = (queryx[0]).GetLength();
+	cout << "ID: " << ID << endl;   
+	cout << "Initial Position: " << init << endl;
+	cout << "Final Position: " << fin << endl;
+	cout << "Number of valid data: " << valid_data << endl;
+	cout << State_Dict[queryx[0].GetState()] << endl;
+	size_t qdata_len = queryx[0].GetLength();
+	cout << "qdata_arr len: " << qdata_len << endl;
+
+	queryx[0].DoQuery();
+
+	cout << "data query: " << queryx[0] << endl;
+ 
 
 	
+	cout << "Query arr length: " << len_q << endl;
+	ID = (queryx[1]).GetID();
+	init = (queryx[1]).GetInitPos();
+	fin = (queryx[1]).GetFinPos();
+	valid_data = (queryx[1]).GetLength();
+	cout << "ID: " << ID << endl;   
+	cout << "Initial Position: " << init << endl;
+	cout << "Final Position: " << fin << endl;
+	cout << "Number of valid data: " << valid_data << endl;
+	cout << State_Dict[queryx[1].GetState()] << endl;
+	qdata_len = queryx[1].GetLength();
+	cout << "qdata_arr len: " << qdata_len << endl;
+
+	queryx[1].DoQuery();
+
+	cout << "data query: " << queryx[1] << endl;*/
+
+	delete red;
+	delete string_array;	
+
 	dfs.close();
 	ifs.close();
 	ofs.close();
+
 	return 0;
 }
 

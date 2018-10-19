@@ -30,7 +30,7 @@ class Query{
 	T min;
 	T max;
 	T prom;
-	qstate_t state;
+	qstate_t state=OK;
 
 public:
 
@@ -259,7 +259,7 @@ ostream& operator<<(ostream & os,const Query<T> & q){
 		os<<State_Dict[q.state]<<endl;
 	else{
 	
-		os << q.qdata << endl;
+		//os << q.qdata << endl;
 		os << q.prom << ',';
 		os << q.min << ',';
 		os << q.max << ',';
