@@ -1,4 +1,0 @@
-Juli,2,4
-Nico,1,6
-Nacho,5,9
-Mussi,1,8
