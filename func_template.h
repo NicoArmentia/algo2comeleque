@@ -1,4 +1,5 @@
-
+#ifndef	FUNC_TEMPLATE_H
+#define FUNC_TEMPLATE_H
 
 template <typename T>
 inline T const& Max(T const& a, T const& b){
@@ -19,4 +20,4 @@ inline void swap(T &a, T &b){
 
 
 
-
+#endif
