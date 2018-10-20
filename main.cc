@@ -114,10 +114,6 @@ int main(int argc, char * const argv[])
 	Array<Query<double>> queryx;
 	Array<string> * string_array;
 	size_t len;
-	size_t len_q;
-	/*string ID;
-	size_t i;
-	size_t init,fin,valid_data;*/
 
 	
 	cmdl.parse(argc, argv);
@@ -144,12 +140,7 @@ int main(int argc, char * const argv[])
 
 	//cout << "--------------------- Get Query ---------------------" << endl;
 
-	get_query_arr(*input_stream,queryx,red,&len_q,DELIMITER);
-
-	for(size_t k=0;k<len_q;k++){
-		 queryx[k].DoQuery();
-		 *output_stream << queryx[k];
-	}
+	GetQuery(*input_stream,red,DELIMITER,*output_stream);
 
 	/*cout << "Query arr length: " << len_q << endl;
 	ID = (queryx[0]).GetID();
