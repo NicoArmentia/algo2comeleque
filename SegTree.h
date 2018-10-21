@@ -7,13 +7,16 @@
 #include "func_template.h"
 #include "Array.h"
 
+using namespace std;
+
 #define	POS_NUM	0
 #define	POS_SUM	1
 #define	POS_MIN	2
 #define	POS_MAX	3
+#define INFINITY(T) numeric_limits<T>::infinity()
 
 
-using namespace std;
+
 
 
 template <typename T>
@@ -79,8 +82,8 @@ SegTree<T>::SegTree(const Array<T> & v){
 			else{
 				((*ST)[len+i-1])[POS_NUM] = 0;
 				((*ST)[len+i-1])[POS_SUM] = 0;
-				((*ST)[len+i-1])[POS_MIN] = 1E5;
-				((*ST)[len+i-1])[POS_MAX] = -1E5;
+				((*ST)[len+i-1])[POS_MIN] = INFINITY(T);
+				((*ST)[len+i-1])[POS_MAX] = -INFINITY(T);
 			}
 		}
 		for(size_t i = size-1; i>1; i=i-2){
@@ -93,7 +96,7 @@ SegTree<T>::SegTree(const Array<T> & v){
 }
 
 template <typename T>	// Destructor
-SegTree<T>::~SegTree(){delete []ST;}
+SegTree<T>::~SegTree(){if(ST) delete ST;}
 
 
 
@@ -108,7 +111,7 @@ void SegTree<T>::SearchSegTree(size_t init_pos, size_t fin_pos, T& min, T& max, 
 	max = v[POS_MAX];
 	num = v[POS_NUM];
 	prom = v[POS_SUM]/num;
-	delete v;
+	delete []v;
 	return;
 }
 
@@ -128,77 +131,74 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 	
 		cout << "entro ambas\t" << k << endl;
 		cout << endl;
-		for(size_t j=0;j<4;j++) cout<<v[j];
+		//for(size_t j=0;j<4;j++) cout<<v[j];
 		cout << endl;
 		cout << "v :=" << v <<"\t&v := " << &v << endl;
-		v = (*ST)[k];
+		for(size_t j=0;j<4;j++) v[j] = ((*ST)[k])[j];
 		cout << "(*ST)[k]:=" << (*ST)[k] << "\t&((*ST)[k]):=" <<&((*ST)[k]) <<  endl;
 		cout << v << "\t" <<*v << endl;
 		for(size_t j=0;j<4;j++) cout<<v[j];
 		cout << endl;
-		//cout << v[POS_MIN] << "\t" << v[POS_MAX] << endl;
+		cout << v[POS_MIN] << "\t" << v[POS_MAX] << endl;
 	
-		//for(size_t l=0;l<15;l++)
-		//	cout << ((*ST)[l])[POS_MIN] << ',';
-		//cout << endl << v[POS_MIN] <<"\t"<< lower << "," << upper << "," << k << endl;
+		for(size_t l=0;l<15;l++)
+			cout << ((*ST)[l])[POS_MIN] << ',';
+		cout << endl << v[POS_MIN] <<"\t"<< lower << "," << upper << "," << k << endl;
 		return;
 	}
-	else if(init_pos < m){
-		cout << "entro left\t" << k << endl;
-		aux_left = new T[4];
-		left = true;
-		cout << endl;
-		for(size_t j=0;j<4;j++) cout<<aux_left[j];
-		cout << endl;
-		cout << "aux_left :=" << aux_left <<"\t&aux_left := " << &aux_left << endl;
-		(*this).SearchSegTree_(init_pos, fin_pos, lower, m, aux_left,2*k+1);
-		cout << "aux_left :=" << aux_left <<"\t&aux_left := " << &aux_left << endl;
-		for(size_t j=0;j<4;j++) cout<<aux_left[j];
-		cout << endl;
-	}
-	else if(fin_pos >= m){
-		cout << "entro right\t" << k << endl;
-		aux_right = new T[4];
-		right = true;
-		(*this).SearchSegTree_(init_pos, fin_pos, m, upper, aux_right, 2*k+2);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	else{
+		 if(init_pos < m){
+			cout << "entro left\t" << k << endl;
+			aux_left = new T[4];
+			left = true;
+			cout << endl;
+			//for(size_t j=0;j<4;j++) cout<<aux_left[j];
+			cout << endl;
+			cout << "aux_left :=" << aux_left <<"\t&aux_left := " << &aux_left << endl;
+			(*this).SearchSegTree_(init_pos, fin_pos, lower, m, aux_left,2*k+1);
+			cout << "aux_left :=" << aux_left <<"\t&aux_left := " << &aux_left << endl;
+			for(size_t j=0;j<4;j++) cout<<aux_left[j];
+			cout << endl;
+		}
+		if(fin_pos > m){
+			cout << "entro right\t" << k << endl;
+			aux_right = new T[4];
+			right = true;
+			(*this).SearchSegTree_(init_pos, fin_pos, m, upper, aux_right, 2*k+2);
+		}
+	}	
+		
 	if(left && right){
+		cout << "entro en combinar left && right" << endl;
 		v[POS_MIN] = Min<T>(aux_left[POS_MIN],aux_right[POS_MIN]);
-		cout << "left := " << aux_left[POS_MIN] << "\t right := " << aux_right[POS_MIN]<<endl;
-		cout << "k := " << k << endl;
+		cout << "aux_left:= " << aux_left[POS_MIN] << " aux_right:= ";
+		cout << aux_right[POS_MIN] << " gano := " << v[POS_MIN] << endl;;
 		v[POS_MAX] = Max<T>(aux_left[POS_MAX],aux_right[POS_MAX]);
+		cout << "aux_left:= " << aux_left[POS_MAX] << " aux_right:= ";
+		cout << aux_right[POS_MAX] << " gano := " << v[POS_MAX] << endl;;
 		v[POS_NUM] = aux_left[POS_NUM] + aux_right[POS_NUM];
-		v[POS_SUM] = (aux_left[POS_SUM] + aux_right[POS_SUM])/v[POS_NUM];
+		cout << "aux_left:= " << aux_left[POS_NUM] << " aux_right:= ";
+		cout << aux_right[POS_NUM] << " gano := " << v[POS_NUM] << endl;;
+		v[POS_SUM] = (aux_left[POS_SUM] + aux_right[POS_SUM]);
+		cout << "aux_left:= " << aux_left[POS_SUM] << " aux_right:= ";
+		cout << aux_right[POS_SUM] << " gano := " << v[POS_SUM] << endl;;
 	}
 	else if(left){
+		cout << "entro en combinar left" << endl;
 		v[POS_MIN] = aux_left[POS_MIN];
 		v[POS_MAX] = aux_left[POS_MAX];
 		v[POS_NUM] = aux_left[POS_NUM];
-		v[POS_SUM] = aux_left[POS_SUM]/v[POS_NUM];
+		v[POS_SUM] = aux_left[POS_SUM];
 	}
 	else{
 		v[POS_MIN] = aux_right[POS_MIN];
+		cout << "entro en combinar right" << endl;
 		v[POS_MAX] = aux_right[POS_MAX];
 		v[POS_NUM] = aux_right[POS_NUM];
-		v[POS_SUM] = aux_right[POS_SUM]/v[POS_NUM];
+		v[POS_SUM] = aux_right[POS_SUM];
 	}
-	if(left) delete aux_left;
-	if(right) delete aux_right;
+	if(left) delete []aux_left;
+	if(right) delete []aux_right;
 	return;
 }
 
