@@ -167,7 +167,7 @@ int main(int argc, char * const argv[])
 	for(size_t j=0; j<4;j++){
 			cout << endl << " \t[" ;
 			for(size_t l=0;l<15;l++)
-				cout << (ricardoarias.ST[l])[j] << ',';
+				cout << ((*(ricardoarias.ST))[l])[j] << ',';
 			cout  <<"]"<< endl;
 		}
 	while(pepe2 == 1){
