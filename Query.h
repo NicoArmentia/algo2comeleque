@@ -359,34 +359,38 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_arr,char delimiter,ost
 	size_t aux_len = sensor_arr.GetLen();
 
 	while(getline(infile,str)){
+	
+		if(str != ""){
 		
-		stringstream str_st(str);
+			stringstream str_st(str);
 
-		aux_query.SetQuery(str_st,delimiter);
+			aux_query.SetQuery(str_st,delimiter);
 
-		if(aux_query.GetState() == OK){
-		
-			ID_found = aux_query.SearchIDFromSensor(sensor_arr,position);
+			if(aux_query.GetState() == OK){
+			
+				ID_found = aux_query.SearchIDFromSensor(sensor_arr,position);
 
-			if(ID_found == true) aux_query.DoQuery(sensor_arr[position].GetArray());
+				if(ID_found == true) aux_query.DoQuery(sensor_arr[position].GetArray());
 
-			else if (aux_query.GetID() == "-"){ 
-				
-				aux_arr = new Array<Array<Data<T>>>(aux_len);
+				else if (aux_query.GetID() == "-" || aux_query.GetID() == ""){ 
+					
+					aux_arr = new Array<Array<Data<T>>>(aux_len);
 
-				for(j=0;j<aux_len;j++) 
-					(*aux_arr).push_back(sensor_arr[j].GetArray());
+					for(j=0;j<aux_len;j++) 
+						(*aux_arr).push_back(sensor_arr[j].GetArray());
 
-				aux_query.DoQuery(*aux_arr);
+					aux_query.DoQuery(*aux_arr);
 
-				delete aux_arr;
+					delete aux_arr;
+				}
+
+				else aux_query.SetState(UNKNOWN_ID);
 			}
 
-			else aux_query.SetState(UNKNOWN_ID);
-		}
+			i++;
+			output_stream << aux_query << endl;
 
-		i++;
-		output_stream << aux_query << endl;
+		}
 	}
 	
 

@@ -39,7 +39,7 @@ public:
 
 /********************************* METODOS DE LA CLASE *********************************/
 template <typename T>
-Data<T>::Data(){enabled = false;}
+Data<T>::Data(){data = 0; enabled = false;}
 
 template <typename T>
 Data<T>::Data(const T & d){data = d;}

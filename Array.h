@@ -6,6 +6,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <cstdlib>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -34,12 +37,15 @@ public:
 	T & 		operator[](const size_t &);
 	const T &	operator[](const size_t &) const;
 	void 		push_back(const T &);
+	int 		ParseString(istream &,char);
 	void 		clear();
 	template <typename TT>
 	friend std::ostream& operator<<(std::ostream&,const Array<TT>&);
 	template <typename TT>
 	friend std::istream & operator>> (std::istream&,Array<TT>&);
 };
+
+/********************************** METODOS DE CLASE **************************************/
 
 template <class T>
 Array<T>::Array(){
@@ -74,6 +80,44 @@ Array<T>::Array(const Array<T> & a_init){
 	for(i=0;i<used_len;i++)
 		p[i]=(a_init.p)[i];
 }
+
+template <typename T>
+int Array<T>::ParseString(istream & infile,char delimiter)
+{
+
+	size_t i=0;
+	size_t delimit_number=0;
+	string aux;
+
+	getline(infile,aux);
+
+	if(aux.back() == '\r')         //En caso que el archivo venga de Windows lo limpio antes de 
+	aux.pop_back();        //trabajar con la string
+
+	while(aux[i]!='\0')
+	{
+
+		if(aux[i]==delimiter)
+			delimit_number++;
+		i++;
+	}
+
+	total_len = delimit_number+1;
+	used_len = delimit_number+1;
+
+	delete []p;
+	p = new string[used_len];
+
+	infile.seekg(0, ios::beg);
+
+	for(i=0;i<used_len-1;i++)
+		getline(infile,p[i],delimiter);
+
+	getline(infile,p[i]);
+
+	return 0;
+}
+
 
 template <class T>
 Array<T>::~Array(){delete []p;}
@@ -203,13 +247,13 @@ std::istream & operator>> (std::istream& is,Array<T>& arr){
 		while( (is >> ch) && (ch == ',') && (is >> aux) ){
 			arr.push_back(aux);
 		}
-	} 
+	}
+	else is.clear(ios::badbit); 
 	if ( ch != ')' ){
+		is.clear(ios::badbit);
 		arr.clear();
 	}
 	return is;
 }
-
-/* ****************************************************************************************** */
 
 #endif

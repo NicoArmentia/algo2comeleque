@@ -112,21 +112,22 @@ int main(int argc, char * const argv[])
 {
 	cmdline cmdl(options);
 	Array<Query<double>> queryx;
-	Array<string> * string_array;
+	Array<string> string_array;
 	size_t len;
 
 	
 	cmdl.parse(argc, argv);
 
-	ParseString(*data_stream,string_array,len,DELIMITER);
-	
+	string_array.ParseString(*data_stream,DELIMITER);
+	len = string_array.GetUsedLen();	
+
 	//cout << "---------------------String Array---------------------" << endl;
-	//for(size_t k=0;k<len;k++) cout << (*string_array)[k] << endl;
+	//for(size_t k=0;k<len;k++) cout << string_array[k] << endl;
 
 
 	//cout << "----------------CreateFromIDArray---------------------" << endl;
 
-	SensorNet<double> red(*string_array,len);
+	SensorNet<double> red(string_array,len);
 
 	//cout << "---------------------Sensor Array---------------------" << endl;
 	//for(i=0;i<len;i++) cout << (*red)[i].GetID() << endl;
@@ -176,9 +177,7 @@ int main(int argc, char * const argv[])
 
 	queryx[1].DoQuery();
 
-	cout << "data query: " << queryx[1] << endl;*/
-
-	delete string_array;	
+	cout << "data query: " << queryx[1] << endl;*/	
 
 	dfs.close();
 	ifs.close();
