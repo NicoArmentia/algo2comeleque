@@ -126,8 +126,8 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 				return 1;
 			}	
 
-			if(rmq_mode = rmq_segtree)
-				(*sensor_arr)[i].CreateSegTree();
+			//if(rmq_mode = rmq_segtree)
+				//(*sensor_arr)[i].CreateSegTree();
 
 			i++;
 			good = false;

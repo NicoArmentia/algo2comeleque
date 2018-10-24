@@ -64,6 +64,8 @@ int main(void)
 				}
 				if(index > arr.GetUsedLen()){
 					cerr << "Invalid Position" << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
 					break;
 				}
 				cout << "Arr[" << index << "]: " << arr[index] << endl;

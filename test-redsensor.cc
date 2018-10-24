@@ -68,6 +68,8 @@ int main(void)
 				}
 				if(index > len){
 					cerr << "Invalid Position" << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
 					break;
 				}
 				cout << "SensorNet[" << index << "]: " << red[index].GetArray() << endl;
@@ -85,6 +87,8 @@ int main(void)
 				}
 				if(index > len){
 					cerr << "Invalid Position" << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
 					break;
 				}
 				cout << "SensorNet[" << index << "]: "  << red[index].GetID() << endl;
