@@ -66,6 +66,7 @@ size_t SensorNet<T>::GetLen() const{return len;}
 template <typename T>
 int SensorNet<T>::GetData(istream & infile,char delimiter){
 
+	extern rmq_mode_t rmq_mode;
 	Data<T> aux_data;
 	size_t i=0;
 	char ch;
@@ -125,6 +126,9 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 				return 1;
 			}	
 
+			if(rmq_mode = rmq_segtree)
+				(*sensor_arr)[i].CreateSegTree();
+
 			i++;
 			good = false;
 			bad = false;
@@ -143,8 +147,6 @@ Sensor<Data<T>> & SensorNet<T>::operator[](const size_t & i){return (*sensor_arr
 
 template <typename T>
 Sensor<Data<T>> const & SensorNet<T>::operator[](const size_t & i)const{return (*sensor_arr)[i];}
-
-
 
 
 #endif

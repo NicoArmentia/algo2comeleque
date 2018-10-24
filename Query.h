@@ -9,15 +9,12 @@
 #include "Sensor.h"
 #include "RedSensores.h"
 #include "func_template.h"
+#include "types.h"
 
 using namespace std;
 
 #ifndef _QUERY_H_INCLUDED_
 #define _QUERY_H_INCLUDED_
-
-typedef enum {OK=0,BAD_QUERY=1,NO_DATA=2,UNKNOWN_ID=3} qstate_t;
-
-static string State_Dict[4] = {"OK","BAD_QUERY","NO_DATA","UNKNOWN_ID"};
 
 template <typename T>
 class Query{
@@ -31,6 +28,7 @@ class Query{
 	T max;
 	T prom;
 	qstate_t state=OK;
+	rqm_mode_t RQMMode = standard;
 
 public:
 
