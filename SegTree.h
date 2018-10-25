@@ -24,7 +24,7 @@ template <typename T>
 class SegTree{
 // Atributos privados
 private:
-			/* Arreglo de arreglo de datos. Es un arreglo que simula un arbol
+	Array<T[4]> * ST;	/* Arreglo de arreglo de datos. Es un arreglo que simula un arbol
 				que en cada nodo(arreglo) tiene la cantidad efectiva de datos usados,
 				 la suma de los segmentos 'hijos', el maximo y el minimo */
 				
@@ -35,22 +35,14 @@ private:
 				// el segment tree
 	
 public:
-		Array<T[4]> * ST;
-		SegTree(const Array<T> &);
-		//SegTree(const SegTree &);	// Constructor por copia del mismo tipo
-		~SegTree();	// Destructor
 
-	/*
-//	Array<T> & 	operator=( const Array<T> & ); 
-//	bool 		operator==( const Array<T> & ) const; 
-//	bool 		operator!=( const Array<T> & ) const; 
-	T &	operator[](const size_t &);	// Devuelve el dato sub i del Array
-	T const & operator[](const size_t &)const;	// Idem arriba
-	const Array<T> & GetArray()const;	// Devuelve el Array de datos (const o no)
-	*/
-	void SearchSegTree(size_t,size_t,T&,T&,T&,T&);
+	SegTree(const Array<T> &);
+	//SegTree(const SegTree &);	// Constructor por copia del mismo tipo
+	~SegTree();	// Destructor
+	int SearchSegTree(size_t,size_t,T&,T&,T&,T&);
 	void SearchSegTree_(size_t,size_t,size_t,size_t,T * &,size_t);
-	
+	template<typename TT>
+	friend std::ostream& operator<<(std::ostream&,const SegTree &);
 };
 
 template <typename T>
@@ -112,18 +104,22 @@ SegTree<T>::~SegTree(){if(ST) delete ST;}
 
 
 template <typename T>
-void SegTree<T>::SearchSegTree(size_t init_pos, size_t fin_pos, T& min, T& max, T& prom, T& num){
+int SegTree<T>::SearchSegTree(size_t init_pos, size_t fin_pos, T& min, T& max, T& prom, T& num){
 	T * v = new T[4];
 	
-	if(fin_pos <= init_pos) return;
+	if(fin_pos <= init_pos) return -1;	//Ver que hago con esto
 	
 	SearchSegTree_(init_pos,fin_pos,0,len,v,0);
+	if(v[POS_NUM] == 0){
+		delete []v;
+		return -1;			//Ver que hago con esto
+	}
 	min = v[POS_MIN];
 	max = v[POS_MAX];
 	num = v[POS_NUM];
 	prom = v[POS_SUM]/num;
 	delete []v;
-	return;
+	return 0;
 }
 
 
@@ -213,5 +209,7 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 	return;
 }
 
+template<typename TT>
+friend std::ostream& operator<<(std::ostream&,const SegTree &);
 
 #endif

@@ -36,9 +36,9 @@ public:
 	template <typename TT>
 	friend istream& operator>>(istream&,const Data<TT>&);
 	template <typename TT>
-	
-//	template <typename TT>
 	friend bool	operator==(Data<T> const &,Data<T> const &);//const;
+	template <typename TT>
+	friend bool	operator==(Data<T> const &,T const &);//const;
 	template <typename TT>
 	friend bool	operator!=(Data<TT> const &,Data<TT> const &);//const;
 	template <typename TT>
@@ -142,6 +142,13 @@ template <typename T>
 bool	operator==(Data<T> const & d1,Data<T> const & d2){
 	if(d1.enabled && d2.enabled)
 		return d1.data == d2.data;
+	return false;
+}
+
+template <typename T>
+bool	operator==(Data<T> const & d1,T const & d2){
+	if(d1.enabled)
+		return d1.data == d2;
 	return false;
 }
 
