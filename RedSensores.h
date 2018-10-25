@@ -172,9 +172,9 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 	if(rmq_mode == rmq_segtree){
 
 			for(size_t j=0;j<len;j++)					
-				{(*sensor_arr)[j].CreateSegTree(); cout << "SegTre(" << j << ")" << " creado" << endl;}
+				(*sensor_arr)[j].CreateSegTree();
 
-			sensor_prom.CreateSegTree(); cout << "SegTree Prom creado" << endl;
+			sensor_prom.CreateSegTree();
 	}
 
 	return 0;	
