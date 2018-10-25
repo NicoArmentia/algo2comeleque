@@ -149,8 +149,8 @@ bool	operator==(Data<T> const & d1,Data<T> const & d2){
 
 template <typename T>
 bool	operator==(Data<T> const & d1,T const & d2){
-	if(d1.enabled)
-		return d1.data == d2;
+	if(d1.GetState())
+		return d1.GetData() == d2;
 	return false;
 }
 
