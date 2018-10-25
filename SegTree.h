@@ -16,7 +16,7 @@ using namespace std;
 #define	POS_MAX	3
 #define INFINITY numeric_limits<double>::infinity()
 
-
+static string string_arr[] = {"Count","Sum","Min","Max"}; 
 
 
 
@@ -28,11 +28,13 @@ private:
 				que en cada nodo(arreglo) tiene la cantidad efectiva de datos usados,
 				 la suma de los segmentos 'hijos', el maximo y el minimo */
 				
-       //size_t	n;		// Cantidad de datos que tiene el vector del cual se crea el ST
 	size_t	len;		// Menor potencia de 2 mayor o igual a n
 	
 	SegTree();		// No debería haber un constructor sin un vector del cual generar 
 				// el segment tree
+	
+size_t	GetLen();
+Array<T[4]> * & GetTree();
 	
 public:
 
@@ -42,7 +44,7 @@ public:
 	int SearchSegTree(size_t,size_t,T&,T&,T&,T&);
 	void SearchSegTree_(size_t,size_t,size_t,size_t,T * &,size_t);
 	template<typename TT>
-	friend std::ostream& operator<<(std::ostream&,const SegTree &);
+	friend std::ostream& operator<<(std::ostream&,const SegTree<TT> &);
 };
 
 template <typename T>
@@ -106,6 +108,7 @@ SegTree<T>::~SegTree(){if(ST) delete ST;}
 template <typename T>
 int SegTree<T>::SearchSegTree(size_t init_pos, size_t fin_pos, T& min, T& max, T& prom, T& num){
 	T * v = new T[4];
+	if(!ST) return -1;
 	
 	if(fin_pos <= init_pos) return -1;	//Ver que hago con esto
 	
@@ -209,7 +212,27 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 	return;
 }
 
-template<typename TT>
-friend std::ostream& operator<<(std::ostream&,const SegTree &);
+template<typename T>
+size_t	SegTree<T>::GetLen(){ return len;}
+
+template<typename T>
+Array<T[4]> * & SegTree<T>::GetTree(){return ST;}
+
+template<typename T>
+std::ostream & operator<<(std::ostream& o,const SegTree<T> & S){
+	size_t len; 
+	Array<T[4]> * p; 
+	len = S.GetLen();
+	p = S.GetTree();
+	for(size_t i=0;i<4;i++){
+		o << string_arr[i] << " : ";
+		o << "(";
+		for(size_t j=0;j<2*len-2;j++){
+			o << ((*p)[j])[i] << ',';
+		}
+		o << ((*p)[2*len-2])[i] << ')' << endl;
+	}
+	return o;
+}
 
 #endif
