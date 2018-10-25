@@ -120,7 +120,7 @@ int Array<T>::ParseString(istream & infile,char delimiter)
 
 
 template <class T>
-Array<T>::~Array(){delete []p;}
+Array<T>::~Array(){if(p) delete []p;}
 
 template <class T>
 size_t Array<T>::GetUsedLen() const {return used_len; }

@@ -7,6 +7,7 @@
 #include "Array.h"
 #include "Sensor.h"
 #include "Data.h"
+#include "SegTree.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ class SensorNet{
 
 	Array<Sensor<Data<T>>> * sensor_arr;
 	size_t len;
+	Sensor<Data<T>> sensor_prom;
 
 	public:
 
@@ -29,11 +31,16 @@ class SensorNet{
 	void SetLen(size_t);
 	size_t GetLen() const;
 	
-	int GetData(istream &,char);	
+	int GetData(istream &,char);
+
+	void CreateSensorProm();
+	const Sensor<Data<T>> & GetSensorProm();
+
+	void CreateSegTree();
+	const SegTree<T>* & GetSegTree();	
 
 	Sensor<Data<T>> & operator[](const size_t &);
 	Sensor<Data<T>> const & operator[](const size_t &)const;
-
 
 };
 
@@ -62,6 +69,31 @@ void SensorNet<T>::SetLen(size_t new_len){len = new_len;}
 
 template <typename T>
 size_t SensorNet<T>::GetLen() const{return len;}
+
+template <typename T>
+void SensorNet<T>::CreateSensorProm(){
+
+	if(!sensor_arr) return;
+
+	size_t sensor_len = (*sensor_arr)[0].GetLength();
+
+	for(size_t i=0;i<sensor_len;i++){
+		T aux = 0;
+		size_t count = 0;
+		for(size_t j=0;j<len;j++){
+			if( (((*sensor_arr)[j])[i]).GetState() == true ){
+				aux += (((*sensor_arr)[j])[i]).GetData();
+				count++;
+			}
+		}
+
+		if(count)
+			sensor_prom.push_back(aux/=count);   //Se valido si algun sensor tiene algun dato en esa posicion
+	}
+}
+
+template <typename T>
+const Sensor<Data<T>> & SensorNet<T>::GetSensorProm(){return sensor_prom;}
 
 template <typename T>
 int SensorNet<T>::GetData(istream & infile,char delimiter){
@@ -124,9 +156,10 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 			else if(bad){ 
 				cout << "NO DATA" << endl;
 				return 1;
-			}	
+			}
+	
 
-			//if(rmq_mode = rmq_segtree)
+			//if(rmq_mode == rmq_segtree)
 				//(*sensor_arr)[i].CreateSegTree();
 
 			i++;
@@ -137,6 +170,8 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 		i = 0;
 		str.clear();
 	}
+
+	CreateSensorProm();
 
 	return 0;	
 

@@ -43,7 +43,7 @@ int main(void)
 	
 
 	cout << "TEST MODE: SENSORNET" << endl;
-	cout << "P: Print, D: Get Data, I: Get ID, L: Get Length" << endl;
+	cout << "P: Print, D: Get Data, I: Get ID, L: Get Length, S: Sensor Prom" << endl;
 
 	while(cin >> c){
 
@@ -99,6 +99,10 @@ int main(void)
 				cout << len << endl;
 				break;
 
+			case 'S':
+				cout << "Sensor Prom" << endl;
+				cout << (red.GetSensorProm()).GetArray() << endl;
+				break;
 
 			default: 
 
