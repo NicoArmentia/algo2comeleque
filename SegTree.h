@@ -176,7 +176,7 @@ template<typename T>
 size_t	SegTree<T>::GetLen()const{ return len;}
 
 template<typename T>
-Array<T[4]> * & SegTree<T>::GetTree()const{return *ST;}
+Array<T[4]> & SegTree<T>::GetTree()const{return *ST;}
 
 template<typename T>
 std::ostream & operator<<(std::ostream& o,const SegTree<T> & S){
