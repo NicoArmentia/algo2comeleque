@@ -29,12 +29,31 @@ public:
 	void EnableData();
 	void DisableData();
 	Data<T> & operator=(const Data<T> &);
+	Data<T> & operator=(const T&);
 
 	template <typename TT>
 	friend ostream& operator<<(ostream&,const Data<TT>&);
 	template <typename TT>
 	friend istream& operator>>(istream&,const Data<TT>&);
-
+	template <typename TT>
+	friend bool	operator==(Data<T> const &,Data<T> const &);//const;
+	template <typename TT>
+	friend bool	operator==(Data<T> const &,T const &);//const;
+	template <typename TT>
+	friend bool	operator!=(Data<TT> const &,Data<TT> const &);//const;
+	template <typename TT>
+	friend bool	operator<(Data<TT> const &,Data<TT> const &);//const;
+	template <typename TT>
+	friend bool	operator>(Data<TT> const &,Data<TT> const &);//const;
+	template <typename TT>
+	friend bool	operator<=(Data<TT> const &,Data<TT> const &);//const;
+	template <typename TT>
+	friend bool	operator>=(Data<TT> const &,Data<TT> const &);//const;
+	template <typename TT>
+	friend Data<TT> operator+(const Data<TT> &,const Data<TT> &);
+	template <typename TT>
+	friend Data<TT> operator/(Data<TT> const &,Data<TT> const &);
+	
 };
 
 
@@ -111,5 +130,93 @@ Data<T> & Data<T>::operator=(const Data<T> & d){
 	enabled = d.enabled;
 	return *this;
 }
+
+template <typename T>
+Data<T> & Data<T>::operator=(const T & d){
+	data = d;
+	enabled = true;
+	return *this;
+}
+
+template <typename T>
+bool	operator==(Data<T> const & d1,Data<T> const & d2){
+	if(d1.enabled && d2.enabled)
+		return d1.data == d2.data;
+	return false;
+}
+
+template <typename T>
+bool	operator==(Data<T> const & d1,T const & d2){
+	if(d1.enabled)
+		return d1.data == d2;
+	return false;
+}
+
+template <typename T>
+bool	operator!=(Data<T> const & d1,Data<T> const & d2){
+	if(d1.enabled && d2.enabled)
+		return d1.data != d2.data;
+	return true;
+}
+
+template <typename T>
+bool	operator<(Data<T> const & d1,Data<T> const & d2){
+	if(d1.enabled && d2.enabled)
+		return d1.data < d2.data;
+	return false;
+}
+
+template <typename T>
+bool	operator>(Data<T> const & d1,Data<T> const & d2){
+	if(d1.enabled && d2.enabled)
+		return d1.data > d2.data;
+	return false;
+}
+
+template <typename T>
+bool	operator>=(Data<T> const & d1,Data<T> const & d2){
+	if(d1.enabled && d2.enabled)
+		return d1.data >= d2.data;
+	return false;
+}
+
+template <typename T>
+bool	operator<=(Data<T> const & d1,Data<T> const & d2){
+	if(d1.enabled && d2.enabled)
+		return d1.data <= d2.data;
+	return false;
+}
+
+template <typename T>
+Data<T> operator+(const Data<T> & d1, const Data<T> & d2){
+	Data<T> aux;
+	if(d1.enabled && d2.enabled)
+		aux= d1.data + d2.data;
+	else if(d1.enabled)
+		aux = d1;
+	else if(d2.enabled)
+		aux = d2;
+	else
+		aux = 0.0;
+	return aux;
+}
+
+template <typename T>
+Data<T> operator/(Data<T> const & d1,Data<T> const & d2){
+	Data<T> aux;
+	if(d1.enabled && d2.enabled)
+		aux = d1.data/d2.data;
+	else if(d1.enabled)
+		aux = d1;
+	else if(d2.enabled)
+		aux = d2;
+	else
+		aux = 0.0;
+	return aux;
+	//Data<T> aux(d1.data/d2.data,d1.enabled && d2.enabled);
+	//return aux;
+}
+
+	
 
 #endif
