@@ -33,8 +33,8 @@ private:
 	SegTree();		// No debería haber un constructor sin un vector del cual generar 
 				// el segment tree
 	
-size_t	GetLen();
-Array<T[4]> * & GetTree();
+size_t	GetLen()const;
+Array<T[4]> & GetTree()const;
 	
 public:
 
@@ -76,21 +76,21 @@ SegTree<T>::SegTree(const Array<T> & v){
 					((*ST)[len+i-1])[POS_MIN] = v[i].GetData();
 					((*ST)[len+i-1])[POS_MAX] = v[i].GetData();
 				}
-				else{
+				else{	// Si no existe guardo un dato que no afecte a las operaciones
 					((*ST)[len+i-1])[POS_NUM] = 0;
 					((*ST)[len+i-1])[POS_SUM] = 0;
 					((*ST)[len+i-1])[POS_MIN] = INFINITY;
 					((*ST)[len+i-1])[POS_MAX] = -INFINITY;
 				}
 			}
-			else{
+			else{		// Para las posiciones que tengo que rellenar tambien con un dato
 				((*ST)[len+i-1])[POS_NUM] = 0;
 				((*ST)[len+i-1])[POS_SUM] = 0;
 				((*ST)[len+i-1])[POS_MIN] = INFINITY;
 				((*ST)[len+i-1])[POS_MAX] = -INFINITY;
 			}
-		}
-		for(size_t i = size-1; i>1; i=i-2){
+		}	
+		for(size_t i = size-1; i>1; i=i-2){	// Completo los nodos superiores del arbol de segmentos
 			((*ST)[(i-1)/2])[POS_NUM] = ((*ST)[i])[POS_NUM] + ((*ST)[i-1])[POS_NUM];
 			((*ST)[(i-1)/2])[POS_SUM] = ((*ST)[i])[POS_SUM] + ((*ST)[i-1])[POS_SUM];
 			((*ST)[(i-1)/2])[POS_MIN] = Min<T>(((*ST)[i])[POS_MIN],((*ST)[i-1])[POS_MIN]);
@@ -134,44 +134,17 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 	bool left = false;
 	bool right = false;
 	
-	cout << "k:= " << k << endl;
-
-	
 	if(init_pos <= lower && fin_pos >= upper){
-	
-		cout << "entro ambas\t" << k << endl;
-		cout << endl;
-		//for(size_t j=0;j<4;j++) cout<<v[j];
-		cout << endl;
-		cout << "v :=" << v <<"\t&v := " << &v << endl;
 		for(size_t j=0;j<4;j++) v[j] = ((*ST)[k])[j];
-		cout << "(*ST)[k]:=" << (*ST)[k] << "\t&((*ST)[k]):=" <<&((*ST)[k]) <<  endl;
-		cout << v << "\t" <<*v << endl;
-		for(size_t j=0;j<4;j++) cout<<v[j];
-		cout << endl;
-		cout << v[POS_MIN] << "\t" << v[POS_MAX] << endl;
-	
-		for(size_t l=0;l<15;l++)
-			cout << ((*ST)[l])[POS_MIN] << ',';
-		cout << endl << v[POS_MIN] <<"\t"<< lower << "," << upper << "," << k << endl;
 		return;
 	}
 	else{
 		 if(init_pos < m){
-			cout << "entro left\t" << k << endl;
 			aux_left = new T[4];
 			left = true;
-			cout << endl;
-			//for(size_t j=0;j<4;j++) cout<<aux_left[j];
-			cout << endl;
-			cout << "aux_left :=" << aux_left <<"\t&aux_left := " << &aux_left << endl;
 			(*this).SearchSegTree_(init_pos, fin_pos, lower, m, aux_left,2*k+1);
-			cout << "aux_left :=" << aux_left <<"\t&aux_left := " << &aux_left << endl;
-			for(size_t j=0;j<4;j++) cout<<aux_left[j];
-			cout << endl;
 		}
 		if(fin_pos > m){
-			cout << "entro right\t" << k << endl;
 			aux_right = new T[4];
 			right = true;
 			(*this).SearchSegTree_(init_pos, fin_pos, m, upper, aux_right, 2*k+2);
@@ -179,22 +152,12 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 	}	
 		
 	if(left && right){
-		cout << "entro en combinar left && right" << endl;
 		v[POS_MIN] = Min<T>(aux_left[POS_MIN],aux_right[POS_MIN]);
-		cout << "aux_left:= " << aux_left[POS_MIN] << " aux_right:= ";
-		cout << aux_right[POS_MIN] << " gano := " << v[POS_MIN] << endl;;
 		v[POS_MAX] = Max<T>(aux_left[POS_MAX],aux_right[POS_MAX]);
-		cout << "aux_left:= " << aux_left[POS_MAX] << " aux_right:= ";
-		cout << aux_right[POS_MAX] << " gano := " << v[POS_MAX] << endl;;
 		v[POS_NUM] = aux_left[POS_NUM] + aux_right[POS_NUM];
-		cout << "aux_left:= " << aux_left[POS_NUM] << " aux_right:= ";
-		cout << aux_right[POS_NUM] << " gano := " << v[POS_NUM] << endl;;
 		v[POS_SUM] = (aux_left[POS_SUM] + aux_right[POS_SUM]);
-		cout << "aux_left:= " << aux_left[POS_SUM] << " aux_right:= ";
-		cout << aux_right[POS_SUM] << " gano := " << v[POS_SUM] << endl;;
 	}
 	else if(left){
-		cout << "entro en combinar left" << endl;
 		v[POS_MIN] = aux_left[POS_MIN];
 		v[POS_MAX] = aux_left[POS_MAX];
 		v[POS_NUM] = aux_left[POS_NUM];
@@ -202,7 +165,6 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 	}
 	else{
 		v[POS_MIN] = aux_right[POS_MIN];
-		cout << "entro en combinar right" << endl;
 		v[POS_MAX] = aux_right[POS_MAX];
 		v[POS_NUM] = aux_right[POS_NUM];
 		v[POS_SUM] = aux_right[POS_SUM];
@@ -213,24 +175,22 @@ void SegTree<T>::SearchSegTree_(size_t init_pos,size_t fin_pos,size_t lower,size
 }
 
 template<typename T>
-size_t	SegTree<T>::GetLen(){ return len;}
+size_t	SegTree<T>::GetLen()const{ return len;}
 
 template<typename T>
-Array<T[4]> * & SegTree<T>::GetTree(){return ST;}
+Array<T[4]> * & SegTree<T>::GetTree()const{return *ST;}
 
 template<typename T>
 std::ostream & operator<<(std::ostream& o,const SegTree<T> & S){
 	size_t len; 
-	Array<T[4]> * p; 
 	len = S.GetLen();
-	p = S.GetTree();
 	for(size_t i=0;i<4;i++){
 		o << string_arr[i] << " : ";
 		o << "(";
 		for(size_t j=0;j<2*len-2;j++){
-			o << ((*p)[j])[i] << ',';
+			o << ((S.GetTree())[j])[i] << ',';
 		}
-		o << ((*p)[2*len-2])[i] << ')' << endl;
+		o << ((S.GetTree())[2*len-2])[i] << ')' << endl;
 	}
 	return o;
 }
