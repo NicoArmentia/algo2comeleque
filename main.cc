@@ -147,7 +147,7 @@ int main(int argc, char * const argv[])
 	}
 	else{
 		size_t total_time_ticks = (size_t)(time_fin - time_init);
-		cout << "tiempo de ejecucion de las busquedas : " << total_time_ticks << endl;
+		cout << "Execution time : " << 1e6*total_time_ticks/CLOCKS_PER_SEC << " [us]" << endl;
 	}
 
 
