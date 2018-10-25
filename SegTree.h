@@ -6,6 +6,7 @@
 #include <limits>
 #include "func_template.h"
 #include "Array.h"
+#include "Data.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ using namespace std;
 #define	POS_SUM	1
 #define	POS_MIN	2
 #define	POS_MAX	3
-#define INFINITY(T) numeric_limits<T>::infinity()
+#define INFINITY numeric_limits<double>::infinity()
 
 
 
@@ -24,7 +25,7 @@ class SegTree{
 // Atributos privados
 private:
 			/* Arreglo de arreglo de datos. Es un arreglo que simula un arbol
-				que en cada nodo(arreglo) tiene la cantida efectiva de datos usados,
+				que en cada nodo(arreglo) tiene la cantidad efectiva de datos usados,
 				 la suma de los segmentos 'hijos', el maximo y el minimo */
 				
        //size_t	n;		// Cantidad de datos que tiene el vector del cual se crea el ST
@@ -55,6 +56,7 @@ public:
 template <typename T>
 SegTree<T>::SegTree(){}
 
+
 template <typename T>
 SegTree<T>::SegTree(const Array<T> & v){
 	size_t n = v.GetUsedLen(), n_ = n;
@@ -66,7 +68,7 @@ SegTree<T>::SegTree(const Array<T> & v){
 		len = 0;
 	}
 	else{
-		//
+		//	Busco la siguiente potencia de 2 mayor o igual a n_
 		while(n_ >>= 1) ++pow;
 		if(n<3)	len = n;
 		else 	len = 1 << pow;
@@ -74,16 +76,24 @@ SegTree<T>::SegTree(const Array<T> & v){
 		ST = new Array<T[4]>(size = 2*len - 1);
 		for(size_t i = 0; i<len; i++){
 			if(i<n){
-				((*ST)[len+i-1])[POS_NUM] = 1;
-				((*ST)[len+i-1])[POS_SUM] = v[i];
-				((*ST)[len+i-1])[POS_MIN] = v[i];
-				((*ST)[len+i-1])[POS_MAX] = v[i];
+				if(v[i].GetState() == true){ // Si el dato existe lo guardo
+					((*ST)[len+i-1])[POS_NUM] = 1;
+					((*ST)[len+i-1])[POS_SUM] = v[i].GetData();
+					((*ST)[len+i-1])[POS_MIN] = v[i].GetData();
+					((*ST)[len+i-1])[POS_MAX] = v[i].GetData();
+				}
+				else{
+					((*ST)[len+i-1])[POS_NUM] = 0;
+					((*ST)[len+i-1])[POS_SUM] = 0;
+					((*ST)[len+i-1])[POS_MIN] = INFINITY;
+					((*ST)[len+i-1])[POS_MAX] = -INFINITY;
+				}
 			}
 			else{
 				((*ST)[len+i-1])[POS_NUM] = 0;
 				((*ST)[len+i-1])[POS_SUM] = 0;
-				((*ST)[len+i-1])[POS_MIN] = INFINITY(T);
-				((*ST)[len+i-1])[POS_MAX] = -INFINITY(T);
+				((*ST)[len+i-1])[POS_MIN] = INFINITY;
+				((*ST)[len+i-1])[POS_MAX] = -INFINITY;
 			}
 		}
 		for(size_t i = size-1; i>1; i=i-2){
@@ -94,6 +104,7 @@ SegTree<T>::SegTree(const Array<T> & v){
 		}
 	}	
 }
+
 
 template <typename T>	// Destructor
 SegTree<T>::~SegTree(){if(ST) delete ST;}

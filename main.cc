@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <string>
 
-#include "SegTree.h"
 #include "Sensor.h"
 #include "RedSensores.h"
 #include "Query.h"
@@ -113,25 +112,22 @@ int main(int argc, char * const argv[])
 {
 	cmdline cmdl(options);
 	Array<Query<double>> queryx;
-	Array<string> * string_array;
+	Array<string> string_array;
 	size_t len;
-	size_t len_q;
-	/*string ID;
-	size_t i;
-	size_t init,fin,valid_data;*/
 
 	
 	cmdl.parse(argc, argv);
 
-	ParseString(*data_stream,string_array,len,DELIMITER);
-	
+	string_array.ParseString(*data_stream,DELIMITER);
+	len = string_array.GetUsedLen();	
+
 	//cout << "---------------------String Array---------------------" << endl;
-	//for(size_t k=0;k<len;k++) cout << (*string_array)[k] << endl;
+	//for(size_t k=0;k<len;k++) cout << string_array[k] << endl;
 
 
 	//cout << "----------------CreateFromIDArray---------------------" << endl;
 
-	SensorNet<double> red(*string_array,len);
+	SensorNet<double> red(string_array,len);
 
 	//cout << "---------------------Sensor Array---------------------" << endl;
 	//for(i=0;i<len;i++) cout << (*red)[i].GetID() << endl;
@@ -145,40 +141,8 @@ int main(int argc, char * const argv[])
 
 	//cout << "--------------------- Get Query ---------------------" << endl;
 
-	get_query_arr(*input_stream,queryx,red,&len_q,DELIMITER);
+	GetQuery(*input_stream,red,DELIMITER,*output_stream);
 
-	for(size_t k=0;k<len_q;k++){
-		 queryx[k].DoQuery();
-		 *output_stream << queryx[k];
-	}
-	
-	float pepe;
-	Array<float> juan;
-	cin >> pepe;
-	while(pepe != 17){
-		juan.push_back(pepe);
-		cin >> pepe;
-	}	 
-	SegTree<float> ricardoarias(juan);
-	
-	float min_, max_, num_, prom_;
-	size_t init_pos, fin_pos;
-	int pepe2=1;
-	for(size_t j=0; j<4;j++){
-			cout << endl << " \t[" ;
-			for(size_t l=0;l<15;l++)
-				cout << ((*(ricardoarias.ST))[l])[j] << ',';
-			cout  <<"]"<< endl;
-		}
-	while(pepe2 == 1){
-		cout << "ingresa init_pos y fin_pos" << endl;
-		cin >> init_pos >> fin_pos;
-		ricardoarias.SearchSegTree(init_pos,fin_pos,min_,max_,prom_,num_);
-		cout << "minimo := " << min_ << "\t maximo := "<< max_ << "\t prom := "<< prom_;
-		cout << "\t num := " << num_ << endl;
-		cout << "Para seguir presione 1 para salir presione -1" << endl;
-		cin >> pepe2;
-	}
 	/*cout << "Query arr length: " << len_q << endl;
 	ID = (queryx[0]).GetID();
 	init = (queryx[0]).GetInitPos();
@@ -213,9 +177,7 @@ int main(int argc, char * const argv[])
 
 	queryx[1].DoQuery();
 
-	cout << "data query: " << queryx[1] << endl;*/
-
-	delete string_array;	
+	cout << "data query: " << queryx[1] << endl;*/	
 
 	dfs.close();
 	ifs.close();
