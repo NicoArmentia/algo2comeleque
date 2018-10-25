@@ -9,8 +9,11 @@
 #include "Data.h"
 #include "RedSensores.h"
 #include <limits>
+#include "types.h"
 
 using namespace std;
+
+rmq_mode_t rmq_mode = rmq_segtree;
 
 int main(void)
 {
@@ -43,7 +46,7 @@ int main(void)
 	
 
 	cout << "TEST MODE: SENSORNET" << endl;
-	cout << "P: Print, D: Get Data, I: Get ID, L: Get Length, S: Sensor Prom" << endl;
+	cout << "P: Print, D: Get Data, I: Get ID, L: Get Length, S: Sensor Prom, T: print SegTree, X: print prom SegTree" << endl;
 
 	while(cin >> c){
 
@@ -102,6 +105,30 @@ int main(void)
 			case 'S':
 				cout << "Sensor Prom" << endl;
 				cout << (red.GetSensorProm()).GetArray() << endl;
+				break;
+
+			case 'T':
+				cout << "Segment Tree" << endl;
+
+				cout << "Insert index" << endl;
+				if(!(cin >> index)){
+					cerr << "Invalid Index" << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					break;
+				}
+				if(index > len){
+					cerr << "Invalid Position" << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					break;
+				}
+				cout << red[index].GetSegTree() << endl;
+				break;
+
+			case 'X':
+				cout << "Prom SegTree" << endl;
+				cout << red.GetSensorProm().GetSegTree() << endl;
 				break;
 
 			default: 

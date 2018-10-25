@@ -12,8 +12,6 @@
 #define OUTPUT_OPT_HELP "\n\t | - o \"_\" | --output \"_\" | OPTIONAL \n\n"
 #define OUTPUT_OPT_EXP " The output file contains the results of the querys. If not specified, the standard output stream is taken as the output file for the program.\n The output file has the following format:\n MEAN,MINIMUM,MAXIMUM,AMMOUNT_OF_DATA_USED\n...\n"
 
-#define MODE_OPT_HELP "\n\t | - m \"_\" | --mode \"_\" | OPTIONAL \n\n"
-#define MODE_OPT_EXP " Option for definition of search method. The default method is linear search. The  "
 
 
 

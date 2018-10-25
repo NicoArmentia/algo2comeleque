@@ -101,7 +101,9 @@ void Data<T>::DisableData(){enabled = false;}
 template <typename T>
 ostream& operator<<(ostream & os,const Data<T> & d){
 
-	cout << d.data;
+	if(d.GetState() == false) os << "Disabled";
+
+	else os << d.data;
 	return os;
 }
 

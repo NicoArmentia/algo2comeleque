@@ -68,7 +68,8 @@ public:
 	void SetDataQuery(const Array<Array<Data<T>>> &,Array<T>&);
 
 	void DoQuery(const Array<Data<T>> &);
-	void DoQuery(const Array<Array<Data<T>>> &);
+	void DoQuery(const SegTree<Data<T>> &);
+	void DoQuery(const Sensor<Data<T>> &);
 
 	template <typename TT>
 	friend ostream& operator<<(ostream&,const Query<TT>&);
@@ -249,11 +250,11 @@ void Query<T>::SetDataQuery(const Array<Array<Data<T>>> & d_arr,Array<T> & qdata
 }
 
 template <typename T>
-bool Query<T>::SearchIDFromSensor(const SensorNet<T>& sensor_arr,size_t & position){
+bool Query<T>::SearchIDFromSensor(const SensorNet<T>& sensor_net,size_t & position){
 
-	for(size_t j=0;j<sensor_arr.GetLen();j++){
+	for(size_t j=0;j<sensor_net.GetLen();j++){
 
-		if(sensor_arr[j].GetID() == GetID()){
+		if(sensor_net[j].GetID() == GetID()){
 			position = j;
 			return true;
 		}
@@ -327,33 +328,45 @@ void Query<T>::DoQuery(const Array<Data<T>> & data){
 	return;
 }
 
+/*template <typename T>
+void Query<T>::DoQuery(const SegTree<Data<T>> & seg_tree){
+
+	Data<T> dmin,dmax,dprom,dlen;
+
+	seg_tree.SearchSegTree(init_pos,fin_pos,dmin,dmax,dprom,dlen);
+
+	min = dmin.GetData();
+	max = dmax.GetData();
+	prom = dprom.GetData();
+	data_len = dlen.GetData();
+}*/
+
 template <typename T>
-void Query<T>::DoQuery(const Array<Array<Data<T>>> & data){
+void Query<T>::DoQuery(const Sensor<Data<T>> & sensor){
 
-	Array<T> aux_data;
-	SetDataQuery(data,aux_data);
-	if(state != OK) return;
+	Data<T> dmin,dmax,dprom,dlen;
 
-	CalcMin(aux_data);
-	CalcMax(aux_data);
-	CalcProm(aux_data);
+	sensor.GetSegTree().SearchSegTree(init_pos,fin_pos,dmin,dmax,dprom,dlen);
 
-	return;
+	min = dmin.GetData();
+	max = dmax.GetData();
+	prom = dprom.GetData();
+	data_len = dlen.GetData();
 }
+
 
 /**************************************************************************************************************/
 
 template <typename T>
-int GetQuery(istream & infile,const SensorNet<T> & sensor_arr,char delimiter,ostream & output_stream)
+int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ostream & output_stream)
 {
 
 	string str;
-	size_t i=0,j;
+	size_t i=0;
 	Query<T> aux_query;
 	size_t position;
 	bool ID_found;
-	Array<Array<Data<T>>> * aux_arr;
-	size_t aux_len = sensor_arr.GetLen();
+	extern rmq_mode_t rmq_mode;
 
 	while(getline(infile,str)){
 	
@@ -365,20 +378,18 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_arr,char delimiter,ost
 
 			if(aux_query.GetState() == OK){
 			
-				ID_found = aux_query.SearchIDFromSensor(sensor_arr,position);
+				ID_found = aux_query.SearchIDFromSensor(sensor_net,position);
 
-				if(ID_found == true) aux_query.DoQuery(sensor_arr[position].GetArray());
+				if(ID_found == true){
+
+					if(rmq_mode == rmq_segtree) aux_query.DoQuery(sensor_net[position]);
+					else aux_query.DoQuery(sensor_net[position].GetArray());
+				}
 
 				else if (aux_query.GetID() == "-" || aux_query.GetID() == ""){ 
 					
-					aux_arr = new Array<Array<Data<T>>>(aux_len);
-
-					for(j=0;j<aux_len;j++) 
-						(*aux_arr).push_back(sensor_arr[j].GetArray());
-
-					aux_query.DoQuery(*aux_arr);
-
-					delete aux_arr;
+					if(rmq_mode == rmq_segtree) aux_query.DoQuery(sensor_net.GetSensorProm());
+					else aux_query.DoQuery(sensor_net.GetSensorProm().GetArray());
 				}
 
 				else aux_query.SetState(UNKNOWN_ID);

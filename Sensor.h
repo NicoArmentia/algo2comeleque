@@ -29,7 +29,7 @@ public:
 	void	SetData(const T &,const size_t &);	// Setea el dato sub i del Array
 	void	push_back(const T &);	// Agrega un dato al final del Array
 	void 	CreateSegTree();
-	const	SegTree<T>* & GetSegTree();
+	const	SegTree<T> & GetSegTree()const;
 
 //	Array<T> & 	operator=( const Array<T> & ); 
 //	bool 		operator==( const Array<T> & ) const; 
@@ -106,7 +106,7 @@ template <typename T>
 void Sensor<T>::CreateSegTree(){seg_tree = new SegTree<T>(data);}
 
 template <typename T>
-const SegTree<T>* & Sensor<T>::GetSegTree(){return seg_tree;}
+const SegTree<T> & Sensor<T>::GetSegTree()const{return *seg_tree;}
 
 
 #endif
