@@ -21,7 +21,7 @@ class SensorNet{
 	Array<Sensor<Data<T>>> * sensor_arr;
 	size_t len;
 	Sensor<Data<T>> sensor_prom;
-	bool valid_sensor = true;
+	bool valid_sensor=true;
 
 	public:
 
@@ -58,17 +58,18 @@ SensorNet<T>::SensorNet(Array<string> &string_array,size_t s_len)
 			if(string_array[j]==string_array[i]){
 				delete sensor_arr;
 				len=0;
-				valid_sensor = false;
+				valid_sensor=false;
 				return;
 			}
 		}
 		(*sensor_arr)[i].SetID(string_array[i]);
 	}
+
 	len = s_len;
 }
 
 template <typename T>
-SensorNet<T>::~SensorNet(){if(sensor_arr)delete sensor_arr;}
+SensorNet<T>::~SensorNet(){if(sensor_arr) delete sensor_arr;}
 
 template <typename T>
 void SensorNet<T>::SetLen(size_t new_len){len = new_len;}
@@ -84,19 +85,17 @@ void SensorNet<T>::CreateSensorProm(){
 	size_t sensor_len = (*sensor_arr)[0].GetLength();
 
 	for(size_t i=0;i<sensor_len;i++){
-		T aux = 0;
-		size_t count = 0;
+		Data<T> aux = 0.0;
+		size_t count=0;
 		for(size_t j=0;j<len;j++){
-			if( (((*sensor_arr)[j])[i]).GetState() == true ){
-				aux += (((*sensor_arr)[j])[i]).GetData();
-				count++;
-			}
+				aux = aux + (((*sensor_arr)[j])[i]);
+				if((*sensor_arr)[j][i].GetState()) count++;
 		}
-
-		if(count){
-			sensor_prom.push_back(aux/=count);   //Se valido si algun sensor tiene algun dato en esa posicion
-			sensor_prom[i].EnableData();
-		}		
+		if(count)
+			aux = aux/(T)count;
+		else aux.DisableData();
+		sensor_prom.push_back(aux);   //Se valido si algun sensor tiene algun dato en esa posicion
+	
 	}
 }
 
@@ -115,67 +114,67 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 	stringstream str_st;
 	bool good = false;
 	bool bad = false;
+	
+	if(!len) return 1;
 
-	if(!valid_sensor) return 1;	// Archivo con dos sensores con el mismo nombre
 	while(getline(infile,str)){
 
 		if(str.back() == '\r')         //En caso que el archivo venga de Windows lo limpio antes de 
 			str.pop_back();        //trabajar con la string
 
-		stringstream str_st (str);
+		if(!str.empty()){
 
-		while(i<len){
-			 	
-			if(str_st >> ch && ch == delimiter){
+			stringstream str_st (str);
 
-				aux_data.SetData(0); //limpio data con un valor por default
-				aux_data.DisableData();
-				good = true;
-			}
-			else if(!isdigit(ch) && ch!=delimiter && ch!='-') return 1;
-
-			
-			else{
-
-				str_st.putback(ch);
-					
-				if(str_st >> aux_data){
-	
-
-
-						aux_data.EnableData();
-						good = true;
-
-				}
-				str_st >> ch;
-			}
-
-			if(good == false && i==len-1){
+			while(i<len){
+				 	
+				if(str_st >> ch && ch == delimiter){
 
 					aux_data.SetData(0); //limpio data con un valor por default
 					aux_data.DisableData();
 					good = true;
+				}
+
+				
+				else if(!isdigit(ch) && ch!=delimiter && ch!='-') return 1;
+				
+				else{
+
+					str_st.putback(ch);
+						
+					if(str_st >> aux_data){
+		
+							aux_data.EnableData();
+							good = true;
+
+					}
+					str_st >> ch;
+				}
+
+				if(good == false && i==len-1){
+						aux_data.SetData(0); //limpio data con un valor por default
+						aux_data.DisableData();
+						good = true;
+				}
+
+				else bad = true;		
+			
+				if(!isdigit(ch) && ch!=delimiter && ch!= '-') return 1;
+				
+						 
+				if(good) (*sensor_arr)[i].push_back(aux_data);
+
+				else if(bad)
+					return 1;
+
+				i++;
+				good = false;
+				bad = false;
 			}
 
-			else bad = true;
-
-
-
-			if(!isdigit(ch) && ch!=delimiter && ch!='-') return 1;
-								 
-			if(good) (*sensor_arr)[i].push_back(aux_data);
-
-			else if(bad){ 
-				return 1;
-			}
-
-			i++;
-			good = false;
-			bad = false;
+			i = 0;
+			str.clear();
 		}
-
-		i = 0;
-		str.clear();
 	}
 
 	CreateSensorProm();

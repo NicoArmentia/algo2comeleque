@@ -155,7 +155,9 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 	if(getline(infile,aux_s,delimiter)) SetID(aux_s);
 
 	if(infile >> aux_init && infile >> ch && ch == delimiter && infile >> aux_fin){
-		if(infile >> ch2){ state = BAD_QUERY; return;}
+
+		if(infile >> ch2) { state = BAD_QUERY; return;}
+
 		if(aux_init > aux_fin)
 			state = BAD_QUERY;
 
@@ -374,6 +376,8 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ost
 		if(str != ""){
 		
 			stringstream str_st(str);
+
+			cout << str << endl;
 
 			aux_query.SetQuery(str_st,delimiter);
 

@@ -53,6 +53,8 @@ public:
 	friend Data<TT> operator+(const Data<TT> &,const Data<TT> &);
 	template <typename TT>
 	friend Data<TT> operator/(Data<TT> const &,Data<TT> const &);
+	template <typename TT>
+	friend Data<TT> operator/(Data<TT> const &,TT const &);
 	
 };
 
@@ -219,6 +221,17 @@ Data<T> operator/(Data<T> const & d1,Data<T> const & d2){
 	//return aux;
 }
 
+template <typename T>
+Data<T> operator/(Data<T> const & d1,T const & d2){
+	Data<T> aux;
+	if(d1.GetState())
+		aux = d1.GetData()/d2;
+	else
+		aux = d1;
+	return aux;
+	//Data<T> aux(d1.data/d2.data,d1.enabled && d2.enabled);
+	//return aux;
+}
 	
 
 #endif
