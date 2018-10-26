@@ -69,7 +69,7 @@ Sensor<T>::Sensor(const Sensor & init){
 }
 
 template <typename T>	// Destructor
-Sensor<T>::~Sensor(){}
+Sensor<T>::~Sensor(){if(seg_tree) delete seg_tree;}
 
 template <typename T>	// Setea el ID del sensor
 void Sensor<T>::SetID(const string & s){	

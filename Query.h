@@ -147,6 +147,7 @@ template <typename T>
 void Query<T>::SetQuery(stringstream & infile,char delimiter){
 
 	char ch;
+	char ch2;
 	size_t aux_init;
 	size_t aux_fin;
 	string aux_s;
@@ -154,7 +155,7 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 	if(getline(infile,aux_s,delimiter)) SetID(aux_s);
 
 	if(infile >> aux_init && infile >> ch && ch == delimiter && infile >> aux_fin){
-
+		if(infile >> ch2){ state = BAD_QUERY; return;}
 		if(aux_init > aux_fin)
 			state = BAD_QUERY;
 

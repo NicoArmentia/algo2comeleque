@@ -21,6 +21,7 @@ class SensorNet{
 	Array<Sensor<Data<T>>> * sensor_arr;
 	size_t len;
 	Sensor<Data<T>> sensor_prom;
+	bool valid_sensor = true;
 
 	public:
 
@@ -52,14 +53,22 @@ SensorNet<T>::SensorNet(Array<string> &string_array,size_t s_len)
 
 	sensor_arr = new Array<Sensor<Data<T>>>(s_len);
 	
-	for(size_t i=0;i<s_len;i++)
+	for(size_t i=0;i<s_len;i++){
+		for(size_t j=0;j<i;j++){
+			if(string_array[j]==string_array[i]){
+				delete sensor_arr;
+				len=0;
+				valid_sensor = false;
+				return;
+			}
+		}
 		(*sensor_arr)[i].SetID(string_array[i]);
-
+	}
 	len = s_len;
 }
 
 template <typename T>
-SensorNet<T>::~SensorNet(){delete sensor_arr;}
+SensorNet<T>::~SensorNet(){if(sensor_arr)delete sensor_arr;}
 
 template <typename T>
 void SensorNet<T>::SetLen(size_t new_len){len = new_len;}
@@ -107,6 +116,7 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 	bool good = false;
 	bool bad = false;
 
+	if(!valid_sensor) return 1;	// Archivo con dos sensores con el mismo nombre
 	while(getline(infile,str)){
 
 		if(str.back() == '\r')         //En caso que el archivo venga de Windows lo limpio antes de 
@@ -121,8 +131,8 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 				aux_data.SetData(0); //limpio data con un valor por default
 				aux_data.DisableData();
 				good = true;
-				cout << "sin datos" << endl;
 			}
+			else if(!isdigit(ch) && ch!=delimiter && ch!='-') return 1;
 
 			
 			else{
@@ -137,6 +147,7 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 						good = true;
 
 				}
+				str_st >> ch;
 			}
 
 			if(good == false && i==len-1){
@@ -144,17 +155,17 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 					aux_data.SetData(0); //limpio data con un valor por default
 					aux_data.DisableData();
 					good = true;
-					cout << "sin datos" << endl; 
 			}
 
 			else bad = true;
 
-			str_st >> ch;
-					 
+
+
+			if(!isdigit(ch) && ch!=delimiter && ch!='-') return 1;
+								 
 			if(good) (*sensor_arr)[i].push_back(aux_data);
 
 			else if(bad){ 
-				cout << "NO DATA" << endl;
 				return 1;
 			}
 

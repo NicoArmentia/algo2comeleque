@@ -129,7 +129,14 @@ int main(int argc, char * const argv[])
 
 	
 	//cout << "-----------------------Get data-----------------------" << endl;
-	red.GetData(*data_stream,DELIMITER);
+	if(red.GetData(*data_stream,DELIMITER)){
+		dfs.close();
+		ifs.close();
+		ofs.close();
+		cerr << "INVALID DATABASE" << endl;
+		return 1;
+	}
+		
 
 	//cout << "---------------------Data vectors---------------------" << endl;
 	//for(i=0;i<len;i++) cout << (*red)[i].GetArray() << endl;
@@ -147,7 +154,7 @@ int main(int argc, char * const argv[])
 	}
 	else{
 		size_t total_time_ticks = (size_t)(time_fin - time_init);
-		cout << "Execution time : " << 1e6*total_time_ticks/CLOCKS_PER_SEC << " [us]" << endl;
+		cout << "Query execution time : " << 1e6*total_time_ticks/CLOCKS_PER_SEC << " [us]" << endl;
 	}
 
 
