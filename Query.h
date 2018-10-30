@@ -16,6 +16,8 @@ using namespace std;
 #ifndef _QUERY_H_INCLUDED_
 #define _QUERY_H_INCLUDED_
 
+#define ERR_QUERY_PREFIX "BAD QUERY: "
+
 template <typename T>
 class Query{
 
@@ -156,7 +158,7 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 	if(infile >> ch && ch != '-') infile.putback(ch);
 
 	else{
-		state = BAD_QUERY;
+		state = INVALID_INDEX;
 		return;
 	}
 
@@ -165,19 +167,19 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 		if(infile >> ch && ch != '-') infile.putback(ch);
 
 		else{
-			state = BAD_QUERY;
+			state = INVALID_INDEX;
 			return;
 		}
 
 		if(infile >> aux_fin){
 
-			if(infile >> ch) { state = BAD_QUERY; return;}
+			if(infile >> ch) { state = INVALID_REQUEST; return;}
 
 			if(aux_init > aux_fin)
-				state = BAD_QUERY;
+				state = INVALID_INTERVAL;
 
 			else if(aux_init == aux_fin)
-				state = NO_DATA;
+				state = EMPTY_INTERVAL;
 				
 			else{
 				SetInitPos(aux_init);
@@ -188,7 +190,7 @@ void Query<T>::SetQuery(stringstream & infile,char delimiter){
 	}
 	
 	else{
-		 state = BAD_QUERY;
+		 state = INVALID_REQUEST;
 		 return;
 	}
 
@@ -286,7 +288,7 @@ bool Query<T>::SearchIDFromSensor(const SensorNet<T>& sensor_net,size_t & positi
 template <typename T>
 ostream& operator<<(ostream & os,const Query<T> & q){
 	if(q.state != OK)
-		os<<State_Dict[q.state]<<endl;
+		os<< ERR_QUERY_PREFIX << State_Dict[q.state]<<endl;
 	else{
 	
 		os << q.prom << ',';
@@ -347,19 +349,6 @@ void Query<T>::DoQuery(const Array<Data<T>> & data){
 	return;
 }
 
-/*template <typename T>
-void Query<T>::DoQuery(const SegTree<Data<T>> & seg_tree){
-
-	Data<T> dmin,dmax,dprom,dlen;
-
-	seg_tree.SearchSegTree(init_pos,fin_pos,dmin,dmax,dprom,dlen);
-
-	min = dmin.GetData();
-	max = dmax.GetData();
-	prom = dprom.GetData();
-	data_len = dlen.GetData();
-}*/
-
 template <typename T>
 void Query<T>::DoQuery(const Sensor<Data<T>> & sensor){
 
@@ -389,7 +378,7 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ost
 
 	while(getline(infile,str)){
 	
-		if(str != ""){
+		if(!str.empty()){
 		
 			stringstream str_st(str);
 

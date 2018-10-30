@@ -18,10 +18,10 @@ using namespace std;
 template <typename T>
 class SensorNet{
 
-	Array<Sensor<Data<T>>> * sensor_arr;
+	Array<Sensor<Data<T>>> * sensor_arr=NULL;
 	size_t len;
 	Sensor<Data<T>> sensor_prom;
-	bool valid_sensor=true;
+	sensornet_state_t state = VALID_DATA;
 
 	public:
 
@@ -32,7 +32,9 @@ class SensorNet{
 	void SetLen(size_t);
 	size_t GetLen() const;
 	
-	int GetData(istream &,char);
+	sensornet_state_t GetData(istream &,char);
+
+	sensornet_state_t GetState();
 
 	void CreateSensorProm();
 	const Sensor<Data<T>> & GetSensorProm()const;	
@@ -51,25 +53,37 @@ template <typename T>
 SensorNet<T>::SensorNet(Array<string> &string_array,size_t s_len)
 {
 
+	if(!s_len){
+
+		state = EMPTY_DATA;
+		return;
+	}
 	sensor_arr = new Array<Sensor<Data<T>>>(s_len);
-	
 	for(size_t i=0;i<s_len;i++){
 		for(size_t j=0;j<i;j++){
 			if(string_array[j]==string_array[i]){
 				delete sensor_arr;
+				state = REPEATED_SENSOR;
 				len=0;
-				valid_sensor=false;
 				return;
 			}
+
+			if(string_array[i].empty()){
+				delete sensor_arr;
+				state = MISSING_SENSOR;
+				len = 0;
+				return;
+			}	
 		}
 		(*sensor_arr)[i].SetID(string_array[i]);
 	}
 
 	len = s_len;
+	state = VALID_DATA;
 }
 
 template <typename T>
-SensorNet<T>::~SensorNet(){if(sensor_arr) delete sensor_arr;}
+SensorNet<T>::~SensorNet(){if(sensor_arr)delete sensor_arr;}
 
 template <typename T>
 void SensorNet<T>::SetLen(size_t new_len){len = new_len;}
@@ -104,18 +118,18 @@ const Sensor<Data<T>> & SensorNet<T>::GetSensorProm()const{return sensor_prom;}
 
 
 template <typename T>
-int SensorNet<T>::GetData(istream & infile,char delimiter){
+sensornet_state_t SensorNet<T>::GetData(istream & infile,char delimiter){
 
 	extern rmq_mode_t rmq_mode;
 	Data<T> aux_data;
-	size_t i=0;
+	size_t i=0,count=0;
 	char ch;
 	string str;
 	stringstream str_st;
 	bool good = false;
 	bool bad = false;
 	
-	if(!len) return 1;
+	if(state) return state;
 
 	while(getline(infile,str)){
 
@@ -136,7 +150,11 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 				}
 
 				
-				else if(!isdigit(ch) && ch!=delimiter && ch!='-') return 1;
+				else if(!isdigit(ch) && ch!=delimiter && ch!='-'){
+					
+					state = INVALID_DATA;
+					return state;
+				}
 				
 				else{
 
@@ -151,25 +169,38 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 					str_st >> ch;
 				}
 
-				if(good == false && i==len-1){
+				if(good == false && i==len-1 && ch == delimiter){
 						aux_data.SetData(0); //limpio data con un valor por default
 						aux_data.DisableData();
 						good = true;
 				}
 
-				else bad = true;		
+				else {
+					state = MISSING_DATA;
+					bad = true;
+				}		
 			
-				if(!isdigit(ch) && ch!=delimiter && ch!= '-') return 1;
+				if(!isdigit(ch) && ch!=delimiter && ch!= '-'){
+					
+					state = INVALID_DATA;
+					bad = true;
+				}
 				
 						 
-				if(good) (*sensor_arr)[i].push_back(aux_data);
+				if(good) {(*sensor_arr)[i].push_back(aux_data);count++;}
 
-				else if(bad)
-					return 1;
-
+				else if(bad){
+					
+					return state;
+				}
 				i++;
 				good = false;
 				bad = false;
+			}
+			if(str_st >> ch){
+
+					state = EXTRA_DATA;
+					return state;
 			}
 
 			i = 0;
@@ -187,9 +218,13 @@ int SensorNet<T>::GetData(istream & infile,char delimiter){
 			sensor_prom.CreateSegTree();
 	}
 
-	return 0;	
+	state = VALID_DATA;
+	return state;	
 
 }
+
+template <typename T>
+sensornet_state_t SensorNet<T>::GetState(){return state;}
 
 template <typename T>
 Sensor<Data<T>> & SensorNet<T>::operator[](const size_t & i){return (*sensor_arr)[i];}

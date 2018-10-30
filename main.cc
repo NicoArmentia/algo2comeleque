@@ -17,6 +17,7 @@
 
 #define DBG(x) cerr << #x << ":" << (x) << endl
 #define DELIMITER ','
+#define ERR_DATA_PREFIX "ERROR DATA BASE: "
 
 using namespace std;
 
@@ -109,12 +110,13 @@ int main(int argc, char * const argv[])
 	Array<Query<double>> queryx;
 	Array<string> string_array;
 	size_t len;
+	sensornet_state_t state;
 
 	
 	cmdl.parse(argc, argv);
 
 	string_array.ParseString(*data_stream,DELIMITER);
-	len = string_array.GetUsedLen();	
+	len = string_array.GetUsedLen();
 
 	//cout << "---------------------String Array---------------------" << endl;
 	//for(size_t k=0;k<len;k++) cout << string_array[k] << endl;
@@ -129,12 +131,12 @@ int main(int argc, char * const argv[])
 
 	
 	//cout << "-----------------------Get data-----------------------" << endl;
-	if(red.GetData(*data_stream,DELIMITER)){
+	if((state = red.GetData(*data_stream,DELIMITER))){
 
 			dfs.close();
 			ifs.close();
 			ofs.close();
-			cerr << "INVALID DATA BASE" << endl;
+			cerr << ERR_DATA_PREFIX << SNet_State_Dict[state] << endl;
 			return 1;
 	}
 

@@ -91,29 +91,38 @@ int Array<T>::ParseString(istream & infile,char delimiter)
 
 	getline(infile,aux);
 
-	if(aux.back() == '\r')         //En caso que el archivo venga de Windows lo limpio antes de 
-	aux.pop_back();        //trabajar con la string
+	if(!aux.empty()){
 
-	while(aux[i]!='\0')
-	{
+		if(aux.back() == '\r')         //En caso que el archivo venga de Windows lo limpio antes de 
+		aux.pop_back();        //trabajar con la string
 
-		if(aux[i]==delimiter)
-			delimit_number++;
-		i++;
+		while(aux[i]!='\0')
+		{
+
+			if(aux[i]==delimiter)
+				delimit_number++;
+			i++;
+		}
+
+		total_len = delimit_number+1;
+		used_len = delimit_number+1;
+
+		delete []p;
+		p = new string[used_len];
+
+		infile.seekg(0, ios::beg);
+
+		for(i=0;i<used_len-1;i++)
+			getline(infile,p[i],delimiter);
+
+		getline(infile,p[i]);
 	}
 
-	total_len = delimit_number+1;
-	used_len = delimit_number+1;
-
-	delete []p;
-	p = new string[used_len];
-
-	infile.seekg(0, ios::beg);
-
-	for(i=0;i<used_len-1;i++)
-		getline(infile,p[i],delimiter);
-
-	getline(infile,p[i]);
+	else{
+		delete []p;
+		total_len = 0;
+		used_len = 0;
+	}	
 
 	return 0;
 }
