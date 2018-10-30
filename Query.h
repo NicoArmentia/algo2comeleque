@@ -147,27 +147,43 @@ template <typename T>
 void Query<T>::SetQuery(stringstream & infile,char delimiter){
 
 	char ch;
-	char ch2;
 	size_t aux_init;
 	size_t aux_fin;
 	string aux_s;
 
 	if(getline(infile,aux_s,delimiter)) SetID(aux_s);
 
-	if(infile >> aux_init && infile >> ch && ch == delimiter && infile >> aux_fin){
+	if(infile >> ch && ch != '-') infile.putback(ch);
 
-		if(infile >> ch2) { state = BAD_QUERY; return;}
+	else{
+		state = BAD_QUERY;
+		return;
+	}
 
-		if(aux_init > aux_fin)
-			state = BAD_QUERY;
+	if(infile >> aux_init && infile >> ch && ch == delimiter){
 
-		else if(aux_init == aux_fin)
-			state = NO_DATA;
-			
+		if(infile >> ch && ch != '-') infile.putback(ch);
+
 		else{
-			SetInitPos(aux_init);
-			SetFinPos(aux_fin);
-			state = OK;
+			state = BAD_QUERY;
+			return;
+		}
+
+		if(infile >> aux_fin){
+
+			if(infile >> ch) { state = BAD_QUERY; return;}
+
+			if(aux_init > aux_fin)
+				state = BAD_QUERY;
+
+			else if(aux_init == aux_fin)
+				state = NO_DATA;
+				
+			else{
+				SetInitPos(aux_init);
+				SetFinPos(aux_fin);
+				state = OK;
+			}
 		}
 	}
 	
@@ -377,8 +393,6 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ost
 		
 			stringstream str_st(str);
 
-			cout << str << endl;
-
 			aux_query.SetQuery(str_st,delimiter);
 
 			if(aux_query.GetState() == OK){
@@ -401,7 +415,7 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ost
 			}
 
 			i++;
-			output_stream << aux_query << endl;
+			output_stream << aux_query;
 
 		}
 	}
