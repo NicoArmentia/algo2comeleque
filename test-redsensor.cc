@@ -11,6 +11,9 @@
 #include <limits>
 #include "types.h"
 
+#define ERR_DATA_PREFIX "ERROR DATA BASE: "
+#define DELIMITER ','
+
 using namespace std;
 
 rmq_mode_t rmq_mode = rmq_segtree;
@@ -37,12 +40,20 @@ int main(void)
 	size_t len;
 	char c;	
 	Array<string> string_array;
+	sensornet_state_t state;
 
 	string_array.ParseString(*data_stream,',');
 	len = string_array.GetUsedLen();
 
 	SensorNet<double> red(string_array,len);
-	red.GetData(*data_stream,',');
+	
+	if((state = red.GetData(*data_stream,DELIMITER))){
+
+			dfs.close();
+			qfs.close();
+			cerr << ERR_DATA_PREFIX << SNet_State_Dict[state] << endl;
+			return 1;
+	}
 	
 
 	cout << "TEST MODE: SENSORNET" << endl;
@@ -142,6 +153,9 @@ int main(void)
 	}
 
 	cout << "TEST MODE FINISHED" << endl;
+
+	dfs.close();
+	qfs.close();
 
 	return 0;
 }

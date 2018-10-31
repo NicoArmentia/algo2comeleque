@@ -366,7 +366,7 @@ void Query<T>::DoQuery(const Sensor<Data<T>> & sensor){
 /**************************************************************************************************************/
 
 template <typename T>
-int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ostream & output_stream)
+int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ostream * output_stream)
 {
 
 	string str;
@@ -404,8 +404,8 @@ int GetQuery(istream & infile,const SensorNet<T> & sensor_net,char delimiter,ost
 			}
 
 			i++;
-			output_stream << aux_query;
-
+			if(output_stream != NULL) *output_stream << aux_query;  //En caso que no quiera imprimir le paso
+										//NULL como parametro			
 		}
 	}
 	

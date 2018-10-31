@@ -149,7 +149,7 @@ int main(int argc, char * const argv[])
 	clock_t time_fin;
 
 	time_init = clock();
-	GetQuery(*input_stream,red,DELIMITER,*output_stream);
+	GetQuery(*input_stream,red,DELIMITER,output_stream);
 	time_fin = clock();
 	if (time_init == ((clock_t)-1) || time_fin == ((clock_t)-1)){
 		cerr << "Unable to calculate elapsed time" << endl;
